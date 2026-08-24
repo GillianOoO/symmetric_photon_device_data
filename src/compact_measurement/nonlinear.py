@@ -6,6 +6,7 @@ from itertools import product
 import numpy as np
 
 from .hamiltonian import Hamiltonian
+from .pauli import pauli_matrix
 
 
 _PAULI_PRODUCT = {
@@ -18,18 +19,23 @@ _PAULI_PRODUCT = {
 
 def two_copy_observable(
     hamiltonian: Hamiltonian,
-    paper_positive_only: bool = True,
+    paper_positive_only: bool = False,
     tolerance: float = 1e-12,
 ) -> Hamiltonian:
-    """Expand ``(H tensor I) SWAP`` in the product-Pauli basis.
+    """Expand the Hermitian two-copy observable for ``Tr(rho^2 H)``.
 
-    The publication files retained only positive real coefficients. The default
-    preserves that historical behavior. Set ``paper_positive_only=False`` to
-    retain the complete signed real component.
+    The returned operator is the Hermitian part of ``(H tensor I) SWAP``.
+    Its Pauli coefficients are the real parts of the unsymmetrized expansion,
+    including negative values. ``paper_positive_only=True`` is retained only
+    to reproduce the historical publication files.
     """
 
     num_qubits = hamiltonian.num_qubits
     terms: dict[tuple[int, ...], complex] = defaultdict(complex)
+    if abs(hamiltonian.offset) > tolerance:
+        for swap_pauli in product(range(4), repeat=num_qubits):
+            key = tuple(int(value) for value in swap_pauli) * 2
+            terms[key] += hamiltonian.offset / (2**num_qubits)
     for coefficient, pauli in zip(hamiltonian.coefficients, hamiltonian.paulis):
         for swap_pauli in product(range(4), repeat=num_qubits):
             phase = 1 + 0j
@@ -43,15 +49,32 @@ def two_copy_observable(
 
     rows: list[tuple[tuple[int, ...], float]] = []
     for pauli, coefficient in sorted(terms.items()):
-        if abs(coefficient.imag) > tolerance:
-            continue
         real = float(coefficient.real)
         if paper_positive_only:
             if real > tolerance:
                 rows.append((pauli, real))
         elif abs(real) > tolerance:
             rows.append((pauli, real))
+    paulis = np.asarray([pauli for pauli, _ in rows], dtype=int).reshape(
+        -1, 2 * num_qubits
+    )
     return Hamiltonian(
         np.asarray([coefficient for _, coefficient in rows], dtype=float),
-        np.asarray([pauli for pauli, _ in rows], dtype=int),
+        paulis,
     )
+
+
+def direct_nonlinear_expectation(rho: np.ndarray, hamiltonian: Hamiltonian) -> float:
+    """Evaluate ``Tr(rho^2 H)`` without constructing the two-copy operator."""
+
+    expected_dimension = 2**hamiltonian.num_qubits
+    rho = np.asarray(rho, dtype=complex)
+    if rho.shape != (expected_dimension, expected_dimension):
+        raise ValueError(
+            f"State dimension {rho.shape} does not match {hamiltonian.num_qubits} qubits"
+        )
+    rho_squared = rho @ rho
+    value = hamiltonian.offset * float(np.trace(rho_squared).real)
+    for coefficient, pauli in zip(hamiltonian.coefficients, hamiltonian.paulis):
+        value += coefficient * float(np.trace(rho_squared @ pauli_matrix(pauli)).real)
+    return float(value)

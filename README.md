@@ -23,6 +23,7 @@ src/compact_measurement/
   sym_average.py         Measurement-compatible symmetry averaging
   variance.py            Exact OGM single-shot variance
 main_fig3/run.py
+nonlinear_corrected/run.py
 si_fig1/run.py
 si_fig8/run.py
 si_fig9/run.py
@@ -41,7 +42,7 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-All runners print JSON to standard output. To save a newly generated result outside version control, add for example `--output results/main_fig3.generated.json`. The `results/` directory and `*.generated.json` are ignored by Git.
+All runners print JSON to standard output. To save a newly generated result outside the repository, add for example `--output /path/to/results/main_fig3.generated.json`.
 
 ## Method pipeline
 
@@ -58,7 +59,15 @@ The Compact path is fully implemented, rather than loading a precomputed curve:
 
 Core code: `hamiltonian.py`, `measurement.py`, `estimator.py`, and `variance.py`.
 
-For the nonlinear panels, the code first twirls the physical 3-qubit `H_3`, then expands the resulting observable into the two-copy product-Pauli representation. Twirling the already expanded 6-qubit file would be incorrect and produces 480 terms instead of the 144 terms used in the paper.
+For the nonlinear panels, the code first twirls the physical 3-qubit `H_3`, then expands the result as the Hermitian two-copy observable
+
+```text
+((H tensor I) SWAP + SWAP (H tensor I)) / 2.
+```
+
+All positive and negative real Pauli coefficients are retained. The corrected original and Compact expansions each contain 192 terms; the historical positive-only files contained 128 and 144 terms, respectively. Twirling the already expanded 6-qubit file would be incorrect.
+
+The nonlinear simulator and raw-count estimator use the inverse-coverage OGM estimator. Measurement settings are sampled from the optimized distribution, and each Pauli contribution is divided by its design hit probability. This remains unbiased at low `T` even when a particular realized schedule does not hit every term. Experimental two-copy shots use separate, non-overlapping detector outcomes for the two copies, including when both halves request the same basis.
 
 ### sym_average
 
@@ -83,6 +92,16 @@ This is the raw experimental-count path. Each point uses 20 disjoint blocks from
 | e-f | 3-qubit `tr(rho^2 H)`, W/GHZ | `inputs/hamiltonians/H_3.txt` | two independent slices of `bin_W3.zip` or `bin_GHZ3.zip` |
 
 Default linear shot counts are `12, 45, 160, 572, 2038, 7259, 25848`; nonlinear panels use `12, 45, 160, 572, 2038, 7259`. Output rows contain the 20 estimates, their mean, standard deviation, RMSE, and uncovered-term count.
+
+### Corrected nonlinear rerun
+
+Entry point: `nonlinear_corrected/run.py`
+
+```bash
+python nonlinear_corrected/run.py --output-dir /path/to/output
+```
+
+This focused runner regenerates the signed original and Compact two-copy Hamiltonians, both OGM measurement distributions, ideal W/GHZ simulation errors, raw experimental-count errors, and exact single-shot variances. RMSE is always evaluated against the direct target `Tr(rho^2 H_3)`, never against the historical positive-only observable. Generated JSON, CSV, Hamiltonian, and measurement-design files are written only to the requested output directory.
 
 ### Supplementary Figure 1
 
@@ -135,7 +154,7 @@ Entry point: `si_fig10/run.py`
 python si_fig10/run.py
 ```
 
-This uses the same raw detector archives and six panels as Main Figure 3. The error reference is instead the expectation value of the compact observable on the corresponding tomography matrix (`rho_W3.mat`, `rho_GHZ3.mat`, `rho_W4.mat`, or `rho_GHZ4.mat`), matching the noisy-state post-processing path.
+This uses the same raw detector archives and six panels as Main Figure 3. Linear-panel errors use the compact-observable expectation on the corresponding tomography matrix. Nonlinear-panel errors use the direct physical target `Tr(rho^2 H_3)` so that symmetry-model shift is included rather than absorbed into the reference value.
 
 ### Supplementary Figure 11
 
@@ -159,6 +178,5 @@ The inputs and variance calculation are the same as Supplementary Figure 11. The
 
 ## Input provenance
 - `pauli_*.csv` maps each detector file number to its physical local-Pauli basis.
-
 
 For a fast smoke test of the simulation/experimental runners, use `--quick`; it uses shots `12,45` and two repetitions. `--quick` is for code validation, not for paper-level statistics.

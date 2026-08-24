@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import numpy as np
 
-from compact_measurement.estimator import ExperimentalArchive
+from compact_measurement.estimator import (
+    ExperimentalArchive,
+    estimate_experimental_nonlinear_unbiased,
+)
 from compact_measurement.hamiltonian import (
+    Hamiltonian,
     lexicographic_permutation_twirl,
     load_hamiltonian,
     paper_permutation_twirl,
 )
-from compact_measurement.measurement import coverage_matrix, design_ogm
-from compact_measurement.nonlinear import two_copy_observable
+from compact_measurement.measurement import MeasurementDesign, coverage_matrix, design_ogm
+from compact_measurement.nonlinear import direct_nonlinear_expectation, two_copy_observable
 from compact_measurement.pauli import expectation, ghz_expectation
 from compact_measurement.states import ideal_density, load_density_matrix
 from compact_measurement.workflows import EXPERIMENT_ROOT, HAMILTONIAN_ROOT, STATE_ROOT
@@ -38,15 +42,65 @@ def test_scaling_twirl_preserves_ghz_expectation() -> None:
     assert ghz_expectation(original) == ghz_expectation(compact) == 0.0
 
 
-def test_nonlinear_generation_matches_paper_shape() -> None:
+def test_nonlinear_generation_keeps_signed_real_coefficients() -> None:
     h3 = load_hamiltonian(HAMILTONIAN_ROOT / "H_3.txt")
-    paper_original = two_copy_observable(h3)
-    paper_compact = two_copy_observable(paper_permutation_twirl(h3))
-    signed_real_component = two_copy_observable(h3, paper_positive_only=False)
+    signed_original = two_copy_observable(h3)
+    signed_compact = two_copy_observable(paper_permutation_twirl(h3))
+    paper_original = two_copy_observable(h3, paper_positive_only=True)
+    paper_compact = two_copy_observable(
+        paper_permutation_twirl(h3), paper_positive_only=True
+    )
+    assert signed_original.num_terms == 192
+    assert signed_compact.num_terms == 192
+    assert np.count_nonzero(signed_original.coefficients < 0) == 64
+    assert np.count_nonzero(signed_compact.coefficients < 0) == 48
     assert paper_original.num_terms == 128
     assert paper_compact.num_terms == 144
-    assert signed_real_component.num_terms == 192
     assert np.allclose(paper_compact.coefficients, 0.044464375)
+
+
+def test_signed_nonlinear_expansion_matches_direct_matrix_target() -> None:
+    h3 = load_hamiltonian(HAMILTONIAN_ROOT / "H_3.txt")
+    observable = two_copy_observable(h3)
+    rng = np.random.default_rng(20260824)
+    raw = rng.normal(size=(8, 8)) + 1j * rng.normal(size=(8, 8))
+    rho = raw @ raw.conj().T
+    rho /= np.trace(rho)
+    direct = direct_nonlinear_expectation(rho, h3)
+    expanded = expectation(np.kron(rho, rho), observable)
+    assert np.isclose(expanded, direct, atol=1e-12)
+
+
+def test_unbiased_experimental_nonlinear_uses_independent_copy_slices() -> None:
+    class RecordingArchive:
+        num_qubits = 1
+
+        def __init__(self) -> None:
+            self.calls: list[tuple[tuple[int, ...], int, int]] = []
+
+        def outcome_slice(self, setting, start, count):
+            self.calls.append((tuple(int(value) for value in setting), start, count))
+            return np.zeros((count, 1), dtype=np.uint8)
+
+    observable = Hamiltonian(
+        np.asarray([1.0]), np.asarray([[1, 1]], dtype=int)
+    )
+    design = MeasurementDesign(
+        settings=np.asarray([[1, 1]], dtype=int),
+        probabilities=np.asarray([1.0]),
+        diagonal_objective=1.0,
+    )
+    archive = RecordingArchive()
+    batches = estimate_experimental_nonlinear_unbiased(
+        observable, design, archive, shots=[4], repeats=2, seed=123
+    )
+    assert np.allclose(batches[4].estimates, 1.0)
+    assert archive.calls == [
+        ((1,), 0, 4),
+        ((1,), 4, 4),
+        ((1,), 8, 4),
+        ((1,), 12, 4),
+    ]
 
 
 def test_symmetric_state_expectation_is_preserved() -> None:

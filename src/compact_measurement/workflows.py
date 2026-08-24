@@ -9,8 +9,9 @@ import numpy as np
 from .estimator import (
     ExperimentalArchive,
     estimate_experimental_linear,
-    estimate_experimental_nonlinear,
+    estimate_experimental_nonlinear_unbiased,
     simulate_compact,
+    simulate_ogm_unbiased,
     summarize_batches,
 )
 from .hamiltonian import (
@@ -20,7 +21,7 @@ from .hamiltonian import (
     paper_permutation_twirl,
 )
 from .measurement import design_ogm
-from .nonlinear import two_copy_observable
+from .nonlinear import direct_nonlinear_expectation, two_copy_observable
 from .pauli import expectation, ghz_expectation
 from .states import ideal_density, load_density_matrix
 from .sym_average import simulate_symmetry_average
@@ -109,9 +110,22 @@ def run_six_panel_compact(
         case_shots = list(shots) if shots else (
             NONLINEAR_SHOTS if case.nonlinear else LINEAR_SHOTS
         )
-        reference_rho = _case_state(case, noisy=reference_kind == "tomography")
-        reference_observable = compact if reference_kind == "tomography" else original
-        reference = expectation(reference_rho, reference_observable)
+        reference_is_noisy = reference_kind == "tomography"
+        reference_rho = _case_state(case, noisy=reference_is_noisy)
+        if case.nonlinear:
+            physical = load_hamiltonian(HAMILTONIAN_ROOT / case.hamiltonian_file)
+            reference_single_rho = (
+                load_density_matrix(_state_file(case))
+                if reference_is_noisy
+                else ideal_density(case.state, case.num_qubits)
+            )
+            reference = direct_nonlinear_expectation(reference_single_rho, physical)
+            expanded_reference = expectation(reference_rho, original)
+            if not np.isclose(reference, expanded_reference, atol=1e-10):
+                raise ValueError("Signed two-copy expansion does not match Tr(rho^2 H)")
+        else:
+            reference_observable = compact if reference_is_noisy else original
+            reference = expectation(reference_rho, reference_observable)
         measured_state = _case_state(case, noisy=source == "experiment")
         compact_target = expectation(measured_state, compact)
 
@@ -122,15 +136,29 @@ def run_six_panel_compact(
                 archive = _archive(case)
                 archive_cache[archive_key] = archive
             if case.nonlinear:
-                batches = estimate_experimental_nonlinear(
-                    compact, design, archive, case_shots, repeats
+                batches = estimate_experimental_nonlinear_unbiased(
+                    compact,
+                    design,
+                    archive,
+                    case_shots,
+                    repeats,
+                    seed + 10_000 * case_index,
                 )
             else:
                 batches = estimate_experimental_linear(
                     compact, design, archive, case_shots, repeats
                 )
         else:
-            if case.state == "GHZ" and not case.nonlinear:
+            if case.nonlinear:
+                batches = simulate_ogm_unbiased(
+                    compact,
+                    design,
+                    case_shots,
+                    repeats,
+                    seed + 10_000 * case_index,
+                    rho=measured_state,
+                )
+            elif case.state == "GHZ":
                 batches = simulate_compact(
                     compact,
                     design,
@@ -174,6 +202,127 @@ def run_six_panel_compact(
         "error_reference": reference_kind,
         "repeats": repeats,
         "panels": panels,
+    }
+
+
+def _design_payload(design) -> dict[str, object]:
+    return {
+        "num_settings": int(len(design.settings)),
+        "diagonal_objective": float(design.diagonal_objective),
+        "settings": [
+            {
+                "probability": float(probability),
+                "pauli": [int(value) for value in setting],
+            }
+            for setting, probability in zip(design.settings, design.probabilities)
+        ],
+    }
+
+
+def run_corrected_nonlinear_errors(
+    shots: list[int], repeats: int, seed: int, ogm_budget: int
+) -> dict[str, object]:
+    """Recompute the signed nonlinear Compact estimator for W3 and GHZ3."""
+
+    physical = load_hamiltonian(HAMILTONIAN_ROOT / "H_3.txt")
+    compact_physical = _paper_compact(physical)
+    original = two_copy_observable(physical)
+    compact = two_copy_observable(compact_physical)
+    legacy_original = two_copy_observable(physical, paper_positive_only=True)
+    legacy_compact = two_copy_observable(compact_physical, paper_positive_only=True)
+    original_design = design_ogm(original, shot_budget=ogm_budget)
+    compact_design = design_ogm(compact, shot_budget=ogm_budget)
+
+    states: list[dict[str, object]] = []
+    for state_index, state_name in enumerate(("W", "GHZ")):
+        ideal_rho = ideal_density(state_name, 3)
+        tomography_rho = load_density_matrix(STATE_ROOT / f"rho_{state_name}3.mat")
+        ideal_reference = direct_nonlinear_expectation(ideal_rho, physical)
+        tomography_reference = direct_nonlinear_expectation(tomography_rho, physical)
+        ideal_rho_two_copy = np.kron(ideal_rho, ideal_rho)
+        tomography_rho_two_copy = np.kron(tomography_rho, tomography_rho)
+
+        for rho, reference in (
+            (ideal_rho_two_copy, ideal_reference),
+            (tomography_rho_two_copy, tomography_reference),
+        ):
+            if not np.isclose(expectation(rho, original), reference, atol=1e-10):
+                raise ValueError(
+                    f"Signed expansion failed direct expectation check for {state_name}"
+                )
+
+        simulated = simulate_ogm_unbiased(
+            compact,
+            compact_design,
+            shots,
+            repeats,
+            seed + 100_000 * state_index,
+            rho=ideal_rho_two_copy,
+        )
+        archive = ExperimentalArchive(
+            EXPERIMENT_ROOT / f"bin_{state_name}3.zip",
+            EXPERIMENT_ROOT / f"pauli_{state_name}3.csv",
+        )
+        experimental = estimate_experimental_nonlinear_unbiased(
+            compact,
+            compact_design,
+            archive,
+            shots,
+            repeats,
+            seed + 500_000 + 100_000 * state_index,
+        )
+        states.append(
+            {
+                "state": state_name,
+                "ideal_reference_tr_rho2_h": ideal_reference,
+                "tomography_reference_tr_rho2_h": tomography_reference,
+                "tomography_compact_expectation": expectation(
+                    tomography_rho_two_copy, compact
+                ),
+                "tomography_symmetry_shift": expectation(
+                    tomography_rho_two_copy, compact
+                )
+                - tomography_reference,
+                "ideal_simulation": summarize_batches(simulated, ideal_reference),
+                "experimental_counts": summarize_batches(
+                    experimental, tomography_reference
+                ),
+                "single_shot_variance": {
+                    "ideal": single_shot_variance(
+                        compact,
+                        ideal_rho_two_copy,
+                        compact_design.settings,
+                        compact_design.probabilities,
+                    ),
+                    "tomography": single_shot_variance(
+                        compact,
+                        tomography_rho_two_copy,
+                        compact_design.settings,
+                        compact_design.probabilities,
+                    ),
+                },
+            }
+        )
+
+    return {
+        "observable": "Tr(rho^2 H_3)",
+        "method": "Compact (3-qubit permutation twirl + signed two-copy expansion + OGM)",
+        "shots": [int(value) for value in shots],
+        "repeats": int(repeats),
+        "seed": int(seed),
+        "hamiltonians": {
+            "original_signed_terms": original.num_terms,
+            "compact_signed_terms": compact.num_terms,
+            "original_negative_terms": int(np.count_nonzero(original.coefficients < 0)),
+            "compact_negative_terms": int(np.count_nonzero(compact.coefficients < 0)),
+            "legacy_original_positive_terms": legacy_original.num_terms,
+            "legacy_compact_positive_terms": legacy_compact.num_terms,
+        },
+        "measurement_designs": {
+            "original_signed": _design_payload(original_design),
+            "compact_signed": _design_payload(compact_design),
+        },
+        "states": states,
     }
 
 
