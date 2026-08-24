@@ -158,12 +158,7 @@ python si_table1/run.py
 The inputs and variance calculation are the same as Supplementary Figure 11. The runner prints only the Compact single-shot-variance column; it does not load the old table CSV.
 
 ## Input provenance
-
-- `rand_H_3.txt`, `H_3.txt`, `H_4.txt`, `H_8.txt`, `H_12.txt`, and `H_14.txt` were copied from the paper workspace Hamiltonian/preprocessing directories.
-- `rho_*.mat` are the experimental tomography outputs. The original fidelity-bearing filenames were normalized to ASCII names without changing file content.
-- `bin_*.zip` are the original detector bit-string archives. They are read directly with `zipfile`; no archive member is extracted to disk.
 - `pauli_*.csv` maps each detector file number to its physical local-Pauli basis.
-- `CHECKSUMS.sha256` records all checked-in input hashes.
 
 
 For a fast smoke test of the simulation/experimental runners, use `--quick`; it uses shots `12,45` and two repetitions. `--quick` is for code validation, not for paper-level statistics.
