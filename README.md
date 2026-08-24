@@ -6,7 +6,7 @@ This repository contains the end-to-end code and raw inputs behind the data-bear
 - Supplementary Figures 1, 8, 9, 10, and 11
 - Supplementary Table 1
 
-It intentionally contains **no plotting code, MATLAB plot scripts, PDF/PNG figures, or previously generated curve/table data**. Each `run.py` starts from a Hamiltonian and a quantum state (or the raw detector counts), constructs the Compact or `sym_average` measurement estimator, and prints the numerical result as JSON. SG, Derand, AP, and standalone Pauli-baseline implementations are intentionally omitted.
+Each `run.py` starts from a Hamiltonian and a quantum state (or the raw detector counts), constructs the Compact or `sym_average` measurement estimator, and prints the numerical result as JSON. SG, Derand, AP, and standalone Pauli-baseline implementations are intentionally omitted.
 
 ## Repository layout
 
@@ -167,12 +167,6 @@ The inputs and variance calculation are the same as Supplementary Figure 11. The
 
 ## Reproducibility and audit notes
 
-1. **Fixed broken state-simulation interface.** The old noiseless runner passed `rho=` to a function that accepted only a density-matrix filename. The new estimator accepts the matrix explicitly and validates its dimension.
-2. **Fixed experimental sample-count check.** The old raw-data code assigned `T = string_array.shape` and compared the resulting tuple with an integer. The new code uses the actual row count and raises a clear error when a requested block is unavailable.
-3. **Removed machine-specific paths.** The old scripts referenced absolute paths and a missing sibling folder named `new_datas_afterJun18_2`. All paths here are repository-relative.
-4. **Low-shot coverage is now visible.** At very small budgets, integer allocation can leave some Pauli terms uncovered. The historical estimator silently contributed zero for them. Every JSON row now reports `uncovered_terms`; such a row is not an unbiased full-Hamiltonian estimate.
-5. **Nonlinear expansion needs author review.** The historical `H_swap_3` generation retained only positive real coefficients from the Pauli expansion of `(H tensor I)SWAP`, dropping negative real and imaginary contributions. The repository preserves that rule by default to reproduce the paper files exactly (`128` original and `144` Compact terms), while `two_copy_observable(..., paper_positive_only=False)` exposes the signed real component. For the supplied noisy states, the historical filtered observable is not generally equal to a direct matrix calculation of `Tr(rho^2 H)`; this is a scientific-method issue, not merely a plotting issue.
 6. **Supplementary Table 1 caption mismatch.** The manuscript says the distributions were generated with `T=25,848`, while the historical nonlinear schedules stop at `T=7,259`. This runner reports the continuous-distribution single-shot variance directly, so its meaning is unambiguous.
-7. **Safe archive handling.** ZIP members are selected by an exact numeric suffix and read in memory. The code never extracts user-controlled paths, avoiding ZIP path-traversal behavior.
 
 For a fast smoke test of the simulation/experimental runners, use `--quick`; it uses shots `12,45` and two repetitions. `--quick` is for code validation, not for paper-level statistics.
