@@ -1,0 +1,1797 @@
+\RequirePackage[switch,columnwise]{lineno}
+\documentclass[prl,aps,notitlepage,superscriptaddress,showpacs,nofootinbib]{revtex4-2}
+
+
+%\documentclass[prl,aps,notitlepage,superscriptaddress,showpacs,nofootinbib]{revtex4-2}
+
+\input{package}
+\newcommand{\red}[1]{{\color{red} #1}}
+\hypersetup{
+	colorlinks = true,
+	urlcolor = {blue},
+	citecolor = {blue},
+	linkcolor= {blue}
+}
+
+
+\begin{document}
+
+\title{Supplementary Information for “Symmetry speeds up quantum measurements”}
+
+\author{Hu Chen}
+\altaffiliation{These authors contributed equally to this work.}
+\affiliation{Southern University of Science and Technology, Shenzhen, 518055, China}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+
+\author{Bujiao Wu}
+\altaffiliation{These authors contributed equally to this work.}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+
+\author{Qian-Xi Zhang}
+\affiliation{Southern University of Science and Technology, Shenzhen, 518055, China}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+
+\author{Qi-Ming Ding}
+\affiliation{Center on Frontiers of Computing Studies, Peking University, Beijing 100871, China}
+\affiliation{School of Computer Science, Peking University, Beijing 100871, China}
+
+\author{Haozhao Wu}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+\affiliation{College of Computer Science \& Software Engineering, Shenzhen University, Shenzhen, China}
+
+\author{Mei-Shi Su}
+\affiliation{Southern University of Science and Technology, Shenzhen, 518055, China}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+
+\author{Ya-Li Mao}
+\affiliation{School of Physics, Nankai University, Tianjin, 300071, China}
+
+\author{Xiao Yuan}
+\email{xiaoyuan@pku.edu.cn}
+\affiliation{Center on Frontiers of Computing Studies, Peking University, Beijing 100871, China}
+\affiliation{School of Computer Science, Peking University, Beijing 100871, China}
+
+\author{Zheng-Da Li}
+\email{lizhengda@iqasz.cn}
+\affiliation{International Quantum Academy, Shenzhen, 518048, China}
+
+\maketitle
+
+\pagewiselinenumbers
+\modulolinenumbers[1]
+\linenumbers
+
+\tableofcontents
+\newpage
+\renewcommand{\appendixname}{SI}
+\renewcommand\thefigure{\thesection\arabic{figure}}   
+\renewcommand\thetable{\thesection\arabic{table}}   
+ 
+\renewcommand{\figurename}{Supplementary Figure}
+\renewcommand{\tablename}{Supplementary Table}
+
+\bigskip
+
+\renewcommand{\theequation}{S\arabic{equation}}
+\setcounter{equation}{0}
+
+
+
+\section{I. Preliminary}
+
+\subsection{A. Preliminaries: Notation and Lemmas}
+We use $\mathbb{I}_D$ to denote the identity operator of dimension $D \times D$. For simplicity, we write $\mathbb{I}$ when the dimension is clear from context. 
+For $n$-qubit Pauli operators $P=\bigotimes_{i=1}^n P_i$ and $Q=\bigotimes_{i=1}^n Q_i$, we say that $P$ \emph{qubit-wise dominates} $Q$, denoted $P \triangleright Q$, if $P_i\in\{Q_i,\mathbb{I}\}$ for all $i$. 
+We call $P$ and $Q$ \emph{qubit-wise commuting (compatible)} if for any qubit $j$, $[P_j,Q_j]=0$. 
+Single-qubit Pauli operators are denoted $X$, $Y$, and $Z$.
+
+
+Given an observable $H$ and a symmetry group $G$ with unitary representation $g\mapsto U_g$, the associated symmetrized observable is
+\begin{equation}
+    \mathcal{S}(H)=\frac{1}{|G|}\sum_{g\in G} U_g^\dagger H U_g .
+\end{equation}
+
+\begin{definition}[Symmetric twirl]
+Let $G$ be a finite group with unitary representation $g\mapsto U_g$. 
+For a Pauli operator $P$, a subset $\mathcal{X}\subseteq G$ {defines a symmetric twirl of $P$} if
+\begin{equation}
+    \mathcal{S}_{\mathcal{X}}(P):=\frac{1}{|\mathcal{X}|}\sum_{g\in\mathcal{X}} U_g^\dagger P U_g
+\end{equation}
+admits a Pauli decomposition with equal-magnitude coefficients,
+\begin{equation}
+    \mathcal{S}_{\mathcal{X}}(P)=\frac{1}{J}\sum_{j=1}^J \operatorname{sgn}(W_j)\,W_j,
+\end{equation}
+where each $W_j$ is a Pauli operator, $\operatorname{sgn}(W_j)\in\{\pm1\}$ \red{ and $J$ is the total number of terms in the decomposition}. 
+In this case we refer to $\mathcal{S}_{\mathcal{X}}$ as a symmetric twirling of $P$.
+\end{definition}
+
+
+For an $n$-qubit Pauli $P$ with $n_x$, $n_y$, and $n_z$ local $X$, $Y$, and $Z$ factors, respectively, the permutation group $S_n$ induces a symmetric twirling set of size
+\[
+    J=\binom{n}{n_x,n_y,n_z}=\frac{n!}{n_x!\,n_y!\,n_z!\,(n-n_x-n_y-n_z)!}.
+\]
+
+
+\begin{theorem}[Permutation twirl of a Pauli string]
+Let $P\in\{I,X,Y,Z\}^{\otimes n}$ be an $n$-qubit Pauli string with $n_x$, $n_y$, and $n_z$ number of single-qubit Pauli $X$, $Y$, and $Z$ operators, respectively.
+Then the $S_n$-twirl of $P$ is
+\begin{align}
+\mathcal T_{S_n}(P)=\frac{1}{\binom{n}{n_x,n_y,n_z}}
+\!\!\!\sum_{\substack{A_x,A_y,A_z\ \mathrm{disjoint}\\ |A_x|=n_x,\ |A_y|=n_y,\ |A_z|=n_z}}
+\Bigg(\prod_{i\in A_x} X^{(i)}\Bigg)
+\Bigg(\prod_{j\in A_y} Y^{(j)}\Bigg)
+\Bigg(\prod_{k\in A_z} Z^{(k)}\Bigg).
+\label{eq:orbit-average}
+\end{align}
+\label{thm:perm_paulis_symmetric_twirl}
+\end{theorem}
+\begin{proof}
+Conjugation by a permutation $U_\pi$ only relabels sites, hence the multiset of images $\{U_\pi P U_\pi^\dagger:\pi\in S_n\}$ is exactly the set of all distinct placements of $n_x$ copies of $X$, $n_y$ of $Y$, $n_z$ of $Z$ (and $I$ elsewhere). Each distinct placement occurs with the same multiplicity $n_x!\,n_y!\,n_z!\,(n-n_x-n_y-n_z)!$ in the sum over $S_n$, so dividing by $n!$ yields the uniform average \eqref{eq:orbit-average}.
+\end{proof}
+
+As an illustrative example of the twirling concept, we consider the case where $\mathcal{X}$ consists of global $\pi$ rotations.
+ Define  
+\[
+U_\alpha = e^{-i\pi J_\alpha} = \left(e^{-i\frac{\pi}{2}\sigma_\alpha}\right)^{\otimes n}, 
+\qquad \alpha \in \{x,y,z\},
+\]  
+and set $\mathcal{X}=\{I,U_x,U_y,U_z\}$, each of which is a Clifford unitary (Pauli string). The corresponding twirl is  
+\[
+\mathcal{S}_{\mathcal{X}}(Q) 
+= \tfrac{1}{4}\big(Q + U_x Q U_x^\dagger + U_y Q U_y^\dagger + U_z Q U_z^\dagger\big).
+\]  
+If $Q$ is an $n$-qubit Pauli string with axis counts $(n_x,n_y,n_z)$, then  
+\[
+\mathcal S_{\mathcal X}(Q)
+= \tfrac{1}{4}\!\left[1+(-1)^{n_y+n_z}+(-1)^{n_z+n_x}+(-1)^{n_x+n_y}\right]Q
+= \begin{cases}
+Q, & n_x \equiv n_y \equiv n_z \pmod{2},\\[4pt]
+0, & \text{otherwise}.
+\end{cases}
+\]  
+Thus, the twirl defines a symmetric twirling of any Pauli operator $Q$.
+
+
+\subsection{B. Expectation value estimation with Pauli measurement}
+
+Estimating the expectation values of observables plays a crucial role in various quantum applications, notably in variational quantum algorithms~\cite{Cao2019Quantum,cerezo2020variational,endo2020variational}, where a large number of measurements are often required. Given a quantum observable $H$ and an input quantum state $\rho$, efficiently estimating $\tr{\rho H}$ is essential for improving the performance of quantum devices and advancing their capability to solve complex problems in physics and chemistry. In this section, we review the expectation value estimation of observables with state-of-the-art Pauli-basis measurements.
+
+Wu et al.~\cite{wu2023overlapped} proposed a unified framework that generalizes existing qubit-wise commuting measurement approaches. In the following, we briefly review this framework.
+
+Given an observable $H$, we express it in terms of its Pauli decomposition:
+\begin{equation}
+    H = \sum_{j=1}^m \alpha_j Q_j,
+\end{equation}
+where each $Q_j \in \{\mathbb{I}, X, Y, Z\}^{\otimes n}$ is an $n$-qubit Pauli string with a nonzero coefficient $\alpha_j\in \mathbb{R}$.
+Each term $\tr{\rho Q_j}$ can be estimated by measuring the quantum state $\rho$ in the Pauli term $Q_j$. 
+Given a single-shot measurement outcome $s=(s_1,\ldots,s_n)\in\{0,1\}^n$, the corresponding estimator is defined as
+\begin{equation}
+    \mu_s(Q_j) = \prod_{i=1}^n (-1)^{s_i\bm 1\cbra{Q_{ji} \ne \mathbb{I}}},
+\end{equation}
+where $Q_j = \bigotimes_{i=1}^n Q_{ji}$, and $\bm 1\cbra{E} = 1$ if the condition $E$ is true, and $0$ otherwise. 
+When shots are indexed by $t=1,\ldots,T$ with bitstrings $s^{(t)}$, we write
+$\mu(Q_j,t)\;:=\;\mu_{s^{(t)}}(Q_j)$
+to denote the estimator computed from the $t$-th measurement. It is straightforward to verify that the estimator is unbiased, i.e.,
+\begin{equation}
+    \sum_{j}\alpha_j\mathbb{E}_s[\mu_s(Q_j)] = \sum_j\alpha_j \tr{\rho Q_j} = \tr{\rho H}.
+\end{equation}
+
+
+We now consider the case where the measurement basis is selected from a set $\{P^{(1)}, P^{(2)}, \ldots, P^{(K)}\}$, with each element $P^{(k)}$ chosen with probability $p_k$ and $K<m$ in general. Let $\mathcal{P}$ denote this probability distribution, i.e., $P^{(k)} \sim \mathcal{P}$. Let $f(P^{(k)}, Q_j, \mathcal{P})$ be a function defined by a specific algorithm. In the main text, the dependence of $f$ on $\mathcal{P}$ is suppressed for clarity of presentation.
+ We define the estimator for $\tr{\rho H}$ as
+\begin{equation}
+    v = \sum_{j=1}^m \alpha_j f\left(P^{(k)}, Q_j, \mathcal{P}\right) \mu_s\left(P^{(k)}|Q_j\right),
+    \label{eq:framework_meas}
+\end{equation}
+where $P^{(k)}$ is sampled according to the distribution $\mathcal{P}$,  $\mu_s(P|Q)$ is defined as $\mu_s(Q)\bm 1\cbra{Q \triangleright P}$.
+
+Wu et al.~\cite{wu2023overlapped} have proved that we have $\Ebb\sbra{v} = \tr{\rho H}$ if $\Ebb\sbra{f\pbra{P^{(k)},Q_j, \Pcal}} = 1$. They also give the associated functions for several existing algorithms. 
+
+\textit{Grouping algorithm (Ref.~\cite{kandala2017hardware,crawford2021efficient})}. In the grouping algorithm, the set of Pauli terms $\{Q_j\}$ is partitioned into $K$ groups, where each group $\bm{e}_k$ consists of mutually compatible Pauli operators. Specifically, for all $Q_j \in \bm{e}_k$, we have $Q_j \triangleright P^{(k)}$. Accordingly, the function $f$ for the grouping algorithm is defined as
+\begin{align}
+    f_{\text{group}}\left(P^{(k)}, Q_j, \mathcal{P} \right) = 
+    \begin{cases}
+        \dfrac{1}{\mathcal{P}(P^{(k)})} & \text{if } Q_j \in \bm{e}_k, \\
+        0 & \text{otherwise}.
+    \end{cases}
+\end{align}
+In general, $\Pcal\pbra{P^{(k)}}$ is chosen proportional to the weight of the set $\bm e_k$, which equals $\sum_{Q_j\in \bm e_k} \abs{\alpha_j}$.
+
+\textit{Local Classical Shadow (LCS~\cite{huang2020predicting,hadfield2022measurements})}. In the local classical shadow (LCS), all qubits are treated as independent, such that the measurement distribution factorizes as $\mathcal{P}(P^{(k)}) = \prod_{i=1}^n \mathcal{P}_i(P^{(k)}_i)$, where $P^{(k)} = \bigotimes_{l=1}^n P^{(k)}_l$. The algorithm assigns a measurement probability $\mathcal{P}_i(\sigma)$ for the $i$-th qubit, where $\sigma \in \{X, Y, Z\}$. In the standard LCS protocol~\cite{huang2020predicting}, this probability is uniform, i.e., $\mathcal{P}_i(\sigma) = \frac{1}{3}$. In contrast, Ref.~\cite{hadfield2022measurements} obtains $\mathcal{P}_i(\sigma)$ via a local optimization procedure.
+
+The corresponding function $f$ for the LCS estimator is given by
+\begin{equation}
+    f_{\text{LCS}} \left(P^{(k)}, Q_j, \mathcal{P} \right) = \prod_{l=1}^n f_l\left(P^{(k)}_l, Q_{jl}, \mathcal{P}_l \right),
+\end{equation}
+where $Q_j = \bigotimes_{l=1}^n Q_{jl}$ and $P^{(k)} = \bigotimes_{l=1}^n P^{(k)}_l$. Each local factor $f_l$ is defined as
+\begin{align}
+    f_l\left(P^{(k)}_l, Q_{jl}, \mathcal{P}_l \right) =
+    \begin{cases}
+        \dfrac{1}{\mathcal{P}_l\left(P^{(k)}_l\right)} & \text{if } Q_{jl} = P^{(k)}_l, \\
+        1 & \text{if } Q_{jl} = \mathbb{I}, \\
+        0 & \text{otherwise}.
+    \end{cases}
+\end{align}
+
+\textit{Derandomized Classical Shadow (DCS~\cite{Huang2021Efficient}).}
+Although the DCS algorithm does not explicitly construct a measurement probability distribution $\mathcal{P}$, it generates a set of $T$ Pauli measurement operators $W_1, \ldots, W_T$ by optimizing a confidence function in a greedy algorithm, subject to a measurement budget of $T$ shots. 
+
+In practical implementations on quantum hardware, to reduce the number of distinct measurement configurations, repeated measurement settings among the $T$ operators are typically grouped. Let the resulting distinct measurements be denoted by $P^{(1)}, P^{(2)}, \ldots, P^{(K)}$, each appearing with frequency $c_k$ for $1 \leq k \leq K$. We generate the measurement distribution by $\mathcal{P}(P^{(k)}) \approx c_k / T$. This measurement strategy can be incorporated into the general estimator framework in Eq.~\eqref{eq:framework_meas}, with the function $f$ defined as
+\begin{align}
+    f\left(P^{(k)}, Q_j, \mathcal{P} \right) =
+    \begin{cases}
+        \dfrac{1}{\sum_{l : Q_j \triangleright P^{(l)}} \mathcal{P}(P^{(l)})} & \text{if } Q_j \triangleright P^{(k)}, \\
+        0 & \text{otherwise}.
+    \end{cases}
+    \label{eq:general_estimator}
+\end{align}
+Notably, many advanced measurement schemes share the same estimator function $f$ as defined in Eq.~\eqref{eq:general_estimator}, and differ primarily in the design of the loss function and the optimization strategy used to construct the measurement bases $\{P^{(k)}\}$. Representative examples include the overlapped grouping measurement (OGM) algorithm~\cite{wu2023overlapped}, adaptive Pauli shadows~\cite{Shlosberg2023Adaptive}, and shadow grouping~\cite{gresch2025guaranteed}.
+ 
+
+
+
+
+\subsection{C. Expectation value estimation for symmetric states with fewest copies}
+
+
+Zhang et al.~\cite{zhang2024inferring} proved that when the quantum state $\rho$ exhibits a symmetric structure—i.e., there exists a finite or compact Lie group $G$ such that $U_g \rho U_g^\dagger = \rho$ for all $g \in G$, where $U_g$ denotes the unitary representation of the group element $g$—then the symmetrized observable $Y = \mathcal{S}(H)$, defined for any observable $H$, shares the same expectation value as $H$ but generally has a smaller variance. That is,
+\begin{equation}
+ \tr{\rho Y} = \tr{\rho H}, \quad \text{and} \quad (\Delta Y)^2 \leq (\Delta H)^2.   
+\end{equation}
+
+Leveraging this property, the expectation value $\tr{\rho H}$ can be estimated via
+\begin{equation}
+    \frac{1}{|G|} \sum_{g \in G} \tr{U_g \rho U_g^\dagger H},
+\end{equation}
+which can be approximated by randomly selecting a group element $g \in G$, applying the corresponding unitary $U_g$ to the state $\rho$, and then performing computational basis measurements to estimate $\tr{U_g \rho U_g^\dagger H}$, which produces an estimate of $\tr{\rho H}$. While this approach offers improved performance, it requires the implementation of symmetry operations $U_g$, which may be challenging to realize on near-term quantum devices.
+
+
+\section{II. Compact Pauli-based measurement algorithm for symmetric states}
+
+Due to the presence of decoherence and noise, the POVM measurement scheme for symmetric states proposed in Ref.~\cite{zhang2024inferring} is challenging to implement on current quantum hardware. In this work, we propose an alternative measurement algorithm that leverages Pauli measurements in conjunction with the symmetric structure of the quantum state. 
+
+
+
+Noting that $\tr{U_g \rho U_g^\dagger H} = \tr{\rho U_g^\dagger H U_g}$, we apply the symmetry operations $U_g$ to the observable $H=\sum_j \alpha_j Q_j$ instead of the state. 
+We choose $U_g$ from a symmetric twirling set $\Xcal \subseteq G$ for all Pauli terms $\cbra{Q_j}$, which leads to
+\begin{equation}
+    \widetilde{H} = \sum_{j=1}^{m} \frac{\alpha_j}{J_j} \sum_{l=1}^{J_j} \text{sgn}(W_l^{(j)}) W_l^{(j)}.
+    \label{eq:compact_hamiltonian}
+\end{equation}
+For a symmetric state $\rho$, such as a GHZ or $W$ state, the associated symmetric group is the permutation group $G := S_n$. The symmetric twirling set is thus $\Xcal = S_n$. Consider a Pauli operator $Q$ specified by the triple $(n_x,n_y,n_z)$, where $n_x$, $n_y$, and $n_z$ denote the numbers of local Pauli-$X$, $Y$, and $Z$ operators, respectively, with $n_x+n_y+n_z \leq n$. After applying the twirling operation over $S_n$, one obtains  
+\begin{equation}
+    \widetilde{Q} = \frac{1}{\abs{S_n}} \sum_{g \in S_n} U_g Q U_g^\dagger 
+    = \frac{1}{{n \choose n_x, n_y, n_z}} 
+    \sum_{S \in {[n] \choose n_x, n_y, n_z}} P_S ,
+\end{equation}
+where ${[n] \choose n_x, n_y, n_z}$ denotes the set of all partitions 
+$S = S_x \cup S_y \cup S_z \subseteq [n] = \{1,\ldots,n\}$ with 
+$\abs{S_x}=n_x$, $\abs{S_y}=n_y$, and $\abs{S_z}=n_z$. For each such subset,   
+\begin{equation}
+     P_S = \bigotimes_{j\in S_x} X_j \;\otimes\!\!\bigotimes_{j\in S_y} Y_j \;\otimes\!\!\bigotimes_{j\in S_z} Z_j\bigotimes\Ibb_{{ [n]\backslash\pbra{S_x\cup S_y \cup S_z}}},
+\end{equation}
+where $\Ibb_S$ means identity operation on qubit set $S$.
+
+
+ 
+
+The compact Pauli-based measurement scheme optimizes the compatible measurement sets for the symmetrized observable $\widetilde{H}$ rather than for $H$. In what follows, we analyze why this scheme generally achieves superior performance.
+
+ %We then estimate $\tr{\rho \widetilde{H}}$ using Pauli measurement schemes. 
+
+
+%  Hence 
+%  \begin{align}
+% \widetilde{H} = \frac{1}{\abs{S_n}} \sum_{s\in S_n} P_s H P_s.
+%  \end{align}
+
+% Given a total of $T$ measurements distributed over several Pauli operators $\{P\}$, where each Pauli operator $P$ is measured with frequency $N_P$ such that $T = \sum_{P} N_P$, the estimator for $\tr{\rho H}$ is given by
+% \begin{align}
+%     \bar{v} = \sum_{i=1}^m \alpha_i \sum_{P: Q_i \triangleright P} \frac{1}{N_P} \sum_{s} \mu_s(P, \text{supp}(Q_i)).
+% \end{align}
+% It can be easily proven that $\Ebb\sbra{\bar{v}} = \tr{\rho H}$.
+
+\subsection{A. Error Analysis of Compact Measurement Schemes}
+
+
+
+
+ 
+\begin{proposition}
+Let $\rho$ be symmetric with respect to a set $\mathcal{X}$, and let $\mathcal{X}$ define a symmetric twirl of a Pauli operator $Q$. Then there exists an optimization algorithm with associated function $f$ such that  $\Var{v(\Scal_{\Xcal} (Q), f)}\leq \Var{v(Q, f)}$. Moreover, the inequality is strict if there exist two Pauli terms $W_i$ and $W_j$ of $\widetilde{Q} = \mathcal{S}_{\mathcal{X}}(Q)$ that are mutually compatible \red{and $\abs{\tr{\rho W_i W_j}} < 1$}.
+\end{proposition}
+
+
+%$\widetilde{P} = \sum_{g\in \Xcal} U_g P U_g^\dagger$  where $\Xcal\subseteq G$, then $\Var{v(P, f)}\leq \Var{v(\widetilde{P}, f)}$, the equality holds only when all of Pauli terms $\widetilde{P}_j$ are not qubit-wise commute. 
+
+
+\begin{proof}
+By definition, the symmetric twirl of $Q$ with respect to the set $\mathcal{X}$ is
+\begin{equation}
+    \mathcal{S}_{\mathcal{X}}(Q) 
+    = \frac{1}{|\mathcal{X}|} \sum_{g \in \mathcal{X}} U_g^\dagger Q \, U_g
+    = \frac{1}{J} \sum_{j=1}^{J} \operatorname{sgn}(W_j) \, W_j.
+\end{equation}
+Let $f$ denote the grouping method that partitions the Pauli terms $\{W_j\}$ into $K$ compatible sets. 
+In the case where all $W_j$ are mutually incompatible, we have $K=J$, and each singleton $W_j$ is chosen with probability $p_j := 1/J$. Then the second moment of the corresponding estimator is
+\begin{align}
+    \mathbb{E}\big[v(\mathcal{S}_{\mathcal{X}}(Q), f)^2\big] 
+    &= \frac{1}{J^2} \sum_{j=1}^J p_j \, \mathbb{E}\big[v(W_j, f)^2\big] \\
+    &= \frac{1}{J^2} \times J^2
+    \label{eq:variance_compact_pauli_importance_sampling} \\
+    &= \mathbb{E}\big[v(Q,f)^2\big].
+\end{align}
+
+
+If there exists some compatibility among the Pauli terms, then $K<J$. Let $e_i$ denote the $i$-th compatible set, and let $P^{(i)}$ be the corresponding measurement basis, sampled with probability $p_i = |e_i|/J$. The second moment of the estimator can then be written as
+\begin{align}
+    \mathbb{E}\big[v(\mathcal{S}_{\mathcal{X}}(Q), f)^2\big] 
+    &= \sum_{i=1}^{K} \frac{1}{p_i} \frac{1}{J^2} 
+       \Bigg( \sum_{W_j \in e_i} \sgn(W_j) \mu_s(P^{(i)} \mid W_j) \Bigg)^2 \\
+    &\le \sum_{i=1}^{K} \frac{1}{|e_i| J} 
+       \Big( |e_i| + \sum_{j \ne l} \tr{\rho W_j W_l} \Big) \\
+    &< \sum_{i=1}^{K} \frac{|e_i|^2}{|e_i| J} \\
+    &= 1 \\
+    &= \mathbb{E}\big[v(Q, f)^2\big],
+\end{align}
+where the strict inequality in the third line follows from the existence of at least one pair of mutually compatible operators $W_i, W_j$ in some compatible set $e_i$ such that $\abs{\tr{\rho W_i W_j}} < 1$.
+
+
+
+
+\end{proof}
+
+For any observable $H = \sum_{i=1}^m \alpha_i Q_i$, 
+if $\mathcal{X}$ symmetrically twirls each $Q_i \in \{Q_1,\ldots,Q_m\}$, 
+and the Pauli decomposition of each $\mathcal{S}_{\mathcal{X}}(Q_i)$ contains a polynomial number of terms in $n$, 
+with the number of (overlapped) compatible sets among the nontrivial Pauli operators being $\mathcal{O}(1)$, 
+and if $\sum_{i=1}^m \alpha_i^2 = \mathcal{O}(1)$,  
+then the estimation error of our compact measurement method scales as 
+$\mathcal{O}(1/\mathrm{poly}(n))$, as established in the following theorem.
+\begin{theorem}
+Let $\rho$ be a quantum state that is symmetric with respect to a set $\mathcal{X}$ (from a symmetry group $G$), and let $\mathcal{X}$ induce a symmetric twirl on the observable $ H = \sum_{i=1}^m \alpha_i Q_i$.
+Suppose that each term $\mathcal{S}_{\mathcal{X}}(Q_i)=\frac{1}{Y_i}\sum_{j=1}^{Y_i} \mathrm{sgn}(W_{i,j}) W_{i,j}$ can be partitioned into $\Im_i$ compatible sets $e_{i,1},\dots, e_{i,\Im_i}$.
+Then there exists an unbiased estimator $\widehat{v}$ of $\text{tr}(\rho H)$ whose variance satisfies
+\begin{equation}
+    \mathrm{Var}[\widehat{v}]
+\;\le\;
+\sum_{i=1}^{m} \alpha_i^2\,\frac{\Im_i}{Y_i}
+\;+\;
+\mathcal{R}(H,\rho),
+\label{eq:variance_full_version_supple}
+\end{equation}
+where the \emph{intra-group covariance remainder} is
+\begin{equation}
+  \mathcal{R}(H,\rho)
+\;:=\;
+\sum_{i=1}^m \frac{\alpha_i^2}{Y_i}
+\sum_{r=1}^{\Im_i}\frac{1}{\abs{e_{i,r}}}
+\sum_{\substack{W,W'\in e_{i,r}\\ W\neq W'}} \sgn(W)\sgn(W')
+\text{tr}(\rho\,WW'),
+\label{eq:remainder_convariance}
+\end{equation}
+where $\abs{e_{i,r}}$ is the size of the set $e_{i,r}$.
+\label{supp_thm:variance_symmetric_est}
+\end{theorem}
+
+
+\begin{proof}[Proof of Theorem \ref{supp_thm:variance_symmetric_est}]
+Here we give a specific Pauli-based measurement for estimation of $\tr{\rho \Scal_{\Xcal} (H)}$, where $H = \sum_{j=1}^m \alpha_j Q_j$.
+This algorithm utilizes a grouping method for calculating $\tr{\rho \Scal_{\Xcal} (Q_i)}$ by dividing the generated $Y_i$ Pauli terms $W_{i1},\ldots, W_{i,Y_i}$ into $\Im_i$ compatible sets, where the Pauli operators in each group are compatible with each other. Let the estimator be $\Vcal_i$ for $\tr{\rho \Scal_{\Xcal} (Q_i)}$. The final estimate is given by $ \sum_{i=1}^m \alpha_i \Vcal_i$.
+
+Here we give the analysis for the variance of each $\Vcal_i$. We assume the generated $\Im_i$ compatible sets are $e_{1},\ldots, e_{\Im_i}$. Since the total number of Pauli operators is $Y_i$, we choose the sampling weight of each group to be the number of elements. Choose $f = 1/p_r$ where $p_r = \frac{\abs{e_{i,r}}}{Y_i}$ is proportional to the weight of $e_i$. Define estimator
+\begin{equation}
+    \Vcal_i = \frac{1}{Y_ip_r}\sum_{W_{ij} \in e_r}\sgn(W_{ij}) \mu\pbra{P_r|W_{ij}},
+\end{equation}
+where $ W_{ij} \triangleright P_r $ in $e_{i,r}$, where $P_r$ is sampled with probability $p_r$. It is easy to check $\Ebb\sbra{\Vcal_i} = \tr{\rho \sum_{W_{ij} \in e_r} \frac{\sgn(W_{ij})}{Y_i} W_{ij}}$. The variance of $\Vcal_i$ can be bounded by
+\begin{align}
+\Var{\Vcal_i} &\leq \Ebb\sbra{\Vcal_i^2}\\
+&= \sum_{r=1}^{\Im_i} \frac{1}{p_r} \sum_{W_{il},W_{ij}\in e_{r}} \sgn(W_{il}) \sgn(W_{ij})\tr{\rho W_{il} W_{ij}}/Y_i^2\\
+&= \sum_{r=1}^{\Im_i} \frac{Y_i}{\abs{e_{r}}} \frac{\abs{e_{r}}}{Y_i^2} + \frac{1}{ Y_i^2}
+\sum_{r=1}^{\Im_i}\frac{1}{p_r}
+\sum_{\substack{W,W'\in e_{r}\\ W\neq W'}} \sgn(W)\sgn(W')
+\text{tr}(\rho\,WW')
+\label{eq:cov_remainder_one_term}\\
+&=\frac{\Im_i}{Y_i} + \mathcal{R}(Q_i,\rho)
+%&\leq \sum_k \frac{Y_i}{\abs{e_{i,r}}} \frac{1}{Y_i^2} \abs{e_{i,r}}^2
+%\label{eq:pauli_decomp}\\
+\end{align}
+where $\mathcal{R}( Q_i,\rho)$ equals the second term of Eq.~\eqref{eq:cov_remainder_one_term}. Hence Eqs. \eqref{eq:variance_full_version_supple} and \eqref{eq:remainder_convariance} hold.
+
+\end{proof}
+
+
+
+Here we consider several scenarios where $\Rcal(H, \rho)$ is close to zero.
+
+\emph{(i) Symmetric state with the same local Pauli noise on each qubit.} Denote single-qubit Pauli noise as
+\begin{align}
+\Phi (\cdot)= \sum_{P\in\{I,X,Y,Z\}} p_P\, P(\cdot )P,
+\qquad p_P\ge 0,\ \sum_P p_P=1.
+\end{align}
+The Pauli transfer eigenvalue $\lambda_i$ of a quantum channel $\Phi$ is defined as the coefficient of the basis $\sigma_i$, $\Phi(\sigma_i) = \lambda_i \sigma_i$, where $i\in\cbra{x,y,z}$ and $\sigma_i$ is the associated single-qubit Pauli gate. Hence we have
+\begin{align}
+    \lambda_x=p_I+p_X-p_Y-p_Z,\;\;
+\lambda_y=p_I-p_X+p_Y-p_Z,\;\;
+\lambda_z=p_I-p_X-p_Y+p_Z.
+\end{align}
+If $\Phi_1,\Phi_2$ are single-qubit Pauli channels with factors $(\lambda_x^{(1)},\lambda_y^{(1)},\lambda_z^{(1)})$ and
+$(\lambda_x^{(2)},\lambda_y^{(2)},\lambda_z^{(2)})$, then
+\[
+(\Phi_2\circ \Phi_1)(\sigma_a)=\lambda_a^{(2)}\lambda_a^{(1)}\,\sigma_a
+\quad(a\in\{x,y,z\}).
+\]
+For $n$ qubits with identical independent noise $\Lambda=\Phi^{\otimes n}$ and any Pauli string
+$P=\bigotimes_{i=1}^n \sigma_{a_i}$ with counts $(n_X,n_Y,n_Z)$, 
+\begin{align}
+\Lambda(P)=\Big(\lambda_x^{\,n_X}\lambda_y^{\,n_Y}\lambda_z^{\,n_Z}\Big)\,P,
+\qquad
+\langle P\rangle_{\Lambda(\rho)}=\lambda_x^{\,n_X}\lambda_y^{\,n_Y}\lambda_z^{\,n_Z}\,\langle P\rangle_\rho.
+\end{align}
+Hence, $\mathcal{R}(Q_i,\rho)$ is suppressed by the damping factors associated with the Pauli components entering the relevant covariance terms. In the strong-noise limit, any term containing a Pauli component along a direction $\alpha\in\{x,y,z\}$ with $\lambda_\alpha\to 0$ vanishes, provided that the term has nonzero support on that direction. 
+Furthermore, if $Q_i$ has extensive Pauli weight $w(Q_i)=n_X+n_Y+n_Z=\Theta(n)$ and the relevant damping factors satisfy $|\lambda_\alpha|<1$ on a finite fraction of its support, the covariance contribution associated with a Pauli term $P$ is exponentially suppressed by the product of these damping factors. Therefore, $\mathcal{R}(Q_i,\rho)$ tends to zero in the strong-noise or large-system limit.
+%Hence, $\mathcal{R}(Q_i,\rho)$ vanishes in the limit of strong noise, when at least one of the damping factors $\lambda_x, \lambda_y, \lambda_z$ approaches zero due to large error probabilities $p_X, p_Y, p_Z$, or when the operator $Q_i$ has extensive weight, i.e., $n_X + n_Y + n_Z = \mathcal{O}(n)$.
+
+
+\textit{(ii) Specific symmetric states.} We next analyze the intra-group covariance remainder $\mathcal{R}(H,\rho)$ for particular symmetric states.  
+
+(1) For a GHZ state, $\text{tr}(\rho P) \in \{\pm 1,0\}$, and it is nonzero only when $\pm P$ is a stabilizer. Since the GHZ state has exactly $2^n$ stabilizers—negligible compared with the total of $4^n$ Pauli operators—the intra-group covariance remainder $\mathcal{R}(H=\sum_i \alpha_i Q_i,\rho)$ is close to zero whenever the Pauli operator $Q_i$ is not generated by $\langle X_1X_2\cdots X_n,\, Z_1Z_i \mid 2 \leq i \leq n \rangle$.  
+
+(2) For a $W$ state $\rho_W$, $\text{tr}(\rho_W P)$ is nonzero only if  
+\[
+    P \in \{ Z_T,\; Z_T X_i X_j,\; Z_T Y_i Y_j \;\mid\; T \subseteq [n],\; i,j \notin T \text{ and } i< j \}.
+\]  
+The number of such operators is $2^n + n(n-1)2^{n-2}$, which is again negligible compared with the total of $4^n$ Pauli operators.
+
+
+% In the following, we give the analysis for a specific observable, the value of the first part of the variance in Eq.~\eqref{eq:variance_full_version_supple}. 
+
+% If the observable is a Pauli operator with the number of local Pauli-$X,Y,Z$ being $(n_x, n_y, n_z)$. Let $n_1\leq n_2\leq n_3$ be the sorted values of $(n_x, n_y, n_z)$. We choose the twirling set $\Xcal = S_n$, the permutation group. By the property of the permutation group, 
+% \begin{align}
+% \Scal_{S_n}(P) = \frac{1}{{n\choose n_x, n_y, n_z}}\sum_{(e_x, e_y,e_z) \in {[n]\choose n_x, n_y, n_z}} P_{(e_x, e_y,e_z)},
+% \end{align}
+% where ${[n]\choose n_x, n_y, n_z}$ contains all combinations of splitting set $[n]$ into four parts, and the first three parts contains $n_x,n_y,n_z$ elements respectively, and $P_S$ denotes $\otimes_{i\in S}P_i$ where $P=\otimes_{i=1}^n P_i$. To minimize the number of compatible groups, in the $i$-th group for $i\leq {n\choose n_1,n_2}$, we choose the measurement to be the Pauli $P$, which is a combination with $n_1$ $\sigma_1$, and $n_2$ $\sigma_2$, and the rest is chosen as $\sigma_3$.
+% Since each group has ${n-n_1-n_2\choose n_3}$ elements, then $\Im/Y=1/{n-n_1-n_2 \choose n_3}$.
+
+In the following, we analyze a specific observable, focusing on the first term of the variance in Eq.~\eqref{eq:variance_full_version_supple}.  
+
+Consider a Pauli operator $P$ characterized by the numbers of local Pauli-$X$, $Y$, and $Z$ operators $(n_x,n_y,n_z)$. Let $n_1 \leq n_2 \leq n_3$ denote the sorted values of $(n_x,n_y,n_z)$. We choose the twirling set $\mathcal{X}$ to be the permutation group $S_n$. By the property of the permutation group,  
+\begin{align}
+    \mathcal{S}_{S_n}(P) 
+    = \frac{1}{{n \choose n_x,n_y,n_z}}
+      \sum_{(e_x,e_y,e_z) \in {[n]\choose n_x,n_y,n_z}} 
+      P_{(e_x,e_y,e_z)},
+\end{align}
+where ${[n]\choose n_x,n_y,n_z}$ denotes all partitions of $[n]$ into four subsets, the first three containing $n_x,n_y,n_z$ elements, respectively. Here $P_S = \bigotimes_{i\in S} P_i$ for $P = \bigotimes_{i=1}^n P_i$.  
+
+To minimize the number of compatible sets, in the $i$th group ($i \leq {n \choose n_1,n_2}$), we select the measurement to be the Pauli operator composed of $n_1$ instances of $\sigma_1$, $n_2$ instances of $\sigma_2$, and the remaining qubits assigned to $\sigma_3$. Since each group contains ${n-n_1-n_2 \choose n_3}$ elements, it follows that  
+\[
+    \frac{\Im}{Y} = \frac{1}{{n-n_1-n_2 \choose n_3}} .
+\]
+
+
+As a generalization of Theorem~\ref{supp_thm:variance_symmetric_est}, we now consider the spin Hamiltonian  
+\begin{equation}
+    H = \sum_{i \neq j} J_{ij} Z_i X_j .
+\end{equation}
+For this observable we again take $\mathcal{X}$ to be the permutation group $S_n$. The twirled Hamiltonian is then  
+\begin{align}
+    \mathcal{S}_{S_n}(H) 
+    = \pbra{\sum_{i\neq j} J_{ij}} \frac{1}{n(n-1)} \sum_{i \neq j} Z_i X_j
+\end{align}
+In this case, the grouping processes for different $\mathcal{S}_{S_n}(Z_i X_j)$ can be merged, so that all terms generated in $\mathcal{S}_{S_n}(H)$ are grouped together. Specifically, the $Y=n(n-1)$ terms can be partitioned into $\Im = n$ groups, where the $i$th group is measured using the operator $X_{[n]\setminus\{i\}} Z_{\{i\}}$ for $i \in [n]$ with probability $1/n$. Consequently,  
+\begin{align}
+        \alpha^2\sum_{r=1}^{\Im}\frac{1}{Y^2} \frac{1}{p_r}
+    &= \bigl(\sum_{i \neq j} J_{ij}\bigr)^2 \frac{\Im}{\,Y\,}\\
+    &=  \frac{\bigl(\sum_{i \neq j} J_{ij}\bigr)^2}{\,n-1\,}.
+\end{align}
+Hence when $J_{ij}\sim \mathrm{Unif}[-1,1]$, the variance of the estimator produced by the compact algorithm approaches zero in expectation over  $J_{ij}$.
+
+\red{Here we give an analysis for the variance difference between $v(H=\sum_{i=1}^m \alpha_i Q_i,f)$ and $v(\Scal_{\chi}(H),f)$ when $m>1$ for any existing Pauli-based measurement scheme $f$. 
+For each Pauli term $Q_i$, suppose that the symmetric twirling gives
+\[
+    \Scal_{\chi}(Q_i)
+    =
+    \frac{1}{J_i}
+    \sum_{a=1}^{J_i}\sgn_{i,a}W_{i,a},
+    \qquad \sgn_{i,a}\in\{\pm1\}.
+\]
+Then
+\[
+    \Scal_{\chi}(H)
+    =
+    \sum_{i=1}^{m}
+    \frac{\alpha_i}{J_i}
+    \sum_{a=1}^{J_i}\sgn_{i,a}W_{i,a}.
+\]
+Let $\eta_f(R)$ denote the probability that the Pauli string $R$ is covered by the measurement settings selected by the estimator-construction rule $f$, and define
+\[
+    g_f(R,R')
+    :=
+    \frac{1}{\eta_f(R)\eta_f(R')}
+    \sum_{M:M\triangleright R,\;M\triangleright R'}\Pcal_f(M),
+\]
+where $\Pcal_f(M)$ is the measurement distribution induced by $f$, and $M\triangleright R$ means that the measurement setting $M$ covers, or effectively measures, the Pauli string $R$. 
+For a symmetric state $\rho$, we have $\tr{\rho H}=\tr{\rho\Scal_{\chi}(H)}$, and therefore the difference of variances is determined by the difference of second moments. 
+A direct expansion gives
+\[
+\begin{aligned}
+&\mathrm{Var}\!\left(v(H,f)\right)
+-
+\mathrm{Var}\!\left(v(\Scal_{\chi}(H),f)\right)
+\\
+&=
+D_{\mathrm{diag}}
+-
+\mathcal R(H,\rho),
+\end{aligned}
+\]
+where the diagonal reduction is
+\[
+    D_{\mathrm{diag}}
+    :=
+    \sum_{i=1}^{m}\alpha_i^2
+    \left[
+    \frac{1}{\eta_f(Q_i)}
+    -
+    \frac{1}{J_i^2}
+    \sum_{a=1}^{J_i}
+    \frac{1}{\eta_f(W_{i,a})}
+    \right],
+\]
+and the residual covariance term is
+\[
+\begin{aligned}
+\mathcal R(H,\rho)
+:=
+&
+\sum_{i=1}^{m}
+\frac{\alpha_i^2}{J_i^2}
+\sum_{\substack{a,b=1\\a\neq b}}^{J_i}
+\sgn_{i,a}\sgn_{i,b}
+g_f(W_{i,a},W_{i,b})
+\tr{\rho W_{i,a}W_{i,b}}
+\\
+&+
+\sum_{\substack{i,k=1\\i\neq k}}^{m}
+\frac{\alpha_i\alpha_k}{J_iJ_k}
+\sum_{a=1}^{J_i}
+\sum_{b=1}^{J_k}
+\sgn_{i,a}\sgn_{k,b}
+g_f(W_{i,a},W_{k,b})
+\tr{\rho W_{i,a}W_{k,b}}
+\\
+&-
+\sum_{\substack{i,k=1\\i\neq k}}^{m}
+\alpha_i\alpha_k
+g_f(Q_i,Q_k)
+\tr{\rho Q_iQ_k}.
+\end{aligned}
+\]
+Here $D_{\mathrm{diag}}$ captures the positive diagonal gain obtained by distributing the weight of each Pauli coefficient $\alpha_i$ over the twirled orbit, where two Pauli strings \(Q\) and \(Q'\) are in the same symmetry orbit if there exists \(g\in G\) such that \(Q'=U_gQU_g^\dagger\). 
+In particular, if the measurement rule is symmetry-invariant on each orbit, so that $\eta_f(W_{i,a})=\eta_i$ for all $a$, and if $\eta_f(Q_i)=\eta_i$, then
+\[
+    D_{\mathrm{diag}}
+    =
+    \sum_{i=1}^{m}
+    \frac{\alpha_i^2}{\eta_i}
+    \left(1-\frac{1}{J_i}\right)
+    \geq 0.
+\]
+Thus, the diagonal contribution is reduced by the orbit size $J_i$ generated by the twirling.
+
+The residual term \(\mathcal R(H,\rho)\) represents the net change in the off-diagonal covariance contributions induced by the compactification step. It consists of three parts: the intra-orbit covariances between distinct Pauli strings generated from the same twirled component \(\mathcal S_{\chi}(Q_i)\), the inter-orbit covariances between Pauli strings generated from two different original terms \(Q_i\) and \(Q_k\), and the subtraction of the original covariance between \(Q_i\) and \(Q_k\) before twirling. Thus, \(\mathcal R(H,\rho)\) is small when the compactification creates only few jointly measurable Pauli pairs, when the state-dependent covariances \(\operatorname{Cov}_\rho(W_{i,a},W_{k,b})\) are weak, or when the new covariance terms cancel the original ones. 
+Conversely, \(\mathcal R(H,\rho)\) can become large when many symmetry-generated Pauli strings are compatible under the measurement protocol \(f\) and have coherent, non-negligible correlations on \(\rho\). 
+
+In our decomposition, the compact protocol provides a variance advantage whenever the positive diagonal contribution \(D_{\mathrm{diag}}\) dominates this residual covariance term. The compatibility factors \(g_f(W_{i,a},W_{k,b})\) make this dependence explicit: only Pauli pairs that can be jointly measured by the settings selected by \(f\) contribute to \(\mathcal R(H,\rho)\). Hence the size of \(\mathcal R(H,\rho)\) is governed jointly by the orbit sizes, the number of compatible symmetry-generated pairs, and their state-dependent covariance structure.
+}
+
+\red{
+\subsection{B. Exponential variance reduction via Stirling's approximation}
+
+%For notational simplicity, we denote $N=n-n_1-n_2$ and $M=n_3$, and set the key ratio $$p=\frac{M}{N},$$ hence $0\leq p\leq 1$. The exponential reduction in sample complexity or its reduction to a polynomial one can be understood from the behavior of $p$. Notably, $N$ scales linearly with the total number of qubits $n$.
+
+% Under the large-$n$ condition, we can apply Stirling's approximation to simplify the expression of the variance reduction factor
+% \begin{equation}
+% \begin{aligned}
+%     \mathrm{Var}\propto\frac{\Im}{Y} =\frac{1}{\binom{n-n_1-n_2}{n_3}} &=\frac{1}{\binom{N}{M}}\sim\sqrt{2\pi N p(1-p)}\cdot e^{-N H(p)},
+% \end{aligned}
+% \end{equation}
+% where $H(p) = -p\log p - (1-p)\log(1-p)$ is the binary entropy function, and the prefactor is a polynomial in $n$, while the exponential factor is controlled by $H(p)$. 
+
+% If $n_1+n_2$ and $n_3$ both scale linearly with the total number of qubits $n$,  meaning $0<p<1$, the entropy $H(p)$ is strictly positive.
+% Consequently, the estimator's variance vanishes exponentially with the number of qubits. By contrast, if $n - n_1 - n_2$ is comparable to $n_3$, meaning $p \to 1$ (or $p \to 0$), the entropy $H(p) \to 0$ and the exponential factor $e^{-N H(p)}$ vanishes, so the variance decays only polynomially.
+
+Here we give a detailed analysis of the variance analysis for the extreme case of a Pauli operator $P$ acting on $n$ qubits, specified by the triple $(n_x, n_y, n_z)$, where $n_x$, $n_y$, and $n_z$ denote the numbers of local Pauli-$X$, $Y$, and $Z$ operators. 
+By Theorem~\ref{thm:perm_paulis_symmetric_twirl}, the number of terms under twirling of permutation group is equal to $J={n \choose n_x,n_y,n_z}$.
+
+For the compact algorithm, let $(P_1,P_2,P_3)$ be a permutation of $(X,Y,Z)$ such that the corresponding occupation numbers satisfy $n_1\le n_2\le n_3$. For disjoint subsets $S_1,S_2\subseteq [n]$ with $|S_1|=n_1$ and $|S_2|=n_2$, we define the compatible set associated with $S_1$ and $S_2$ as
+\begin{align}
+    e_{S_1,S_2}=\{(P_1)_{S_1}(P_2)_{S_2}(P_3)_{S_3}: S_3\subseteq [n]\setminus(S_1\cup S_2), |S_3|=n_3\},
+\end{align}
+where $P_S:=\prod_{j\in S}P_j$ for $P\in\{X,Y,Z\}$. Each compatible set contains $\binom{n-n_1-n_2}{n_3}$ Pauli strings. Therefore, if the total number of Pauli strings is $J$, the number of compatible sets is $\Im=J/\binom{n-n_1-n_2}{n_3}$. Consequently, the diagonal contribution to the variance is bounded by
+$\Im/J=1/\binom{n-n_1-n_2}{n_3}$.
+
+If $n-n_1-n_2=\Theta(n)$ and $n_3/(n-n_1-n_2)$ approaches a constant $c\in(0,1)$, then $\binom{n-n_1-n_2}{n_3}$ grows exponentially in $n$. Consequently, the scheme achieves an exponential reduction in sample complexity.
+
+Let $L=n-n_1-n_2$ and assume $L=\Theta(n)$. Suppose first that $n_3=cL$ for some fixed constant $c\in(0,1)$ and that $cL$ is an integer. By Stirling's formula, 
+\begin{align}
+    m! =\sqrt{2\pi m}(m/e)^m(1+o(1)).
+\end{align}
+Applying this approximation to $L!$, $(cL)!$, and $((1-c)L)!$, we obtain
+\begin{align}
+    \binom{L}{cL}=\frac{L!}{(cL)!((1-c)L)!}
+=\frac{e^{L H(c)}}{\sqrt{2\pi Lc(1-c)}}(1+o(1)),
+\end{align}
+where $H(c)=-c\log c-(1-c)\log(1-c)$ is the binary entropy function, with logarithms taken in base $e$.
+
+Therefore,
+\begin{align}
+    \frac{1}{\binom{L}{cL}}
+=\sqrt{2\pi Lc(1-c)}e^{-L H(c)}(1+o(1)).
+\end{align}
+Since $H(c)>0$ for every fixed $c\in(0,1)$,
+ the factor $e^{-L H(c)}$ dominates the polynomial prefactor $\sqrt{L}$. Hence $\frac{1}{\binom{L}{cL}}$ is exponentially small in $L$. More explicitly, for sufficiently large $L$, there exists a constant $\gamma>0$ such that $\frac{1}{\binom{L}{cL}}\le e^{-\gamma L}$. Since $L=\Theta(n)$, this also implies $\frac{1}{\binom{L}{cL}}\le e^{-\gamma' n}$ for some constant $\gamma'>0$. Thus, the variance term proportional to $1/\binom{L}{n_3}$ is exponentially suppressed in $n$.
+
+If $cL$ is not an integer, the same conclusion holds by taking $n_3=\lfloor cL\rfloor$ or any sequence satisfying $n_3/L\to c\in(0,1)$, since this changes only subexponential factors and leaves the exponential rate $H(c)$ unchanged.
+
+}
+
+
+\red{\subsection{C. Measurement-compatible symmetry averaging protocol}
+
+We now describe a symmetry-aware coefficient averaging strategy that can be theoretically proved to be better than the Pauli-based qubit-wise commuting (QWC) measurements. 
+The key point is that the averaging is performed only within a fixed jointly measurable QWC block. Therefore, the strategy does not change the Pauli measurement bases or the shot allocation used by the original Pauli-based algorithm.
+
+
+%Measurement-compatible symmetrization.
+Let \(f\) be a Pauli-based measurement scheme that decomposes \(H\) into term-disjoint QWC blocks, $  H=\sum_{s=1}^S H_s.$
+Let \(\mathcal V_s\) denote the real span of all Pauli strings measurable in the Pauli basis used for block \(s\), so that \(H_s\in\mathcal V_s\). Assume that \(\rho\) is invariant under a finite symmetry group \(G\), i.e., for any $g\in G$, we have $  U_g\rho U_g^\dagger=\rho$.
+For each block \(s\), choose a subgroup \(G_s\subseteq G\) that preserves the measurable Pauli span:
+\begin{equation}
+        U_g\mathcal V_sU_g^\dagger=\mathcal V_s,
+    \qquad \forall g\in G_s.
+\end{equation}
+If no nontrivial such subgroup is available, we take \(G_s=\{e\}\). Define the block-wise symmetry projection
+\begin{equation}
+        \Pi_s(A)
+    :=
+    \frac1{|G_s|}
+    \sum_{g\in G_s}U_gAU_g^\dagger,
+    \qquad A\in\mathcal V_s,
+\end{equation}
+and define the measurement-compatible symmetrized Hamiltonian by
+\begin{equation}
+        H_{\mathrm{sym}}^{(f)}
+    :=
+    \sum_{s=1}^S \Pi_s(H_s).
+\end{equation}
+The following theorem establishes that there exists a symmetry-averaging compact protocol that has performance at least as good as the associated Pauli-based measurement scheme.
+
+
+\begin{theorem}% [Measurement-compatible symmetry averaging]
+\label{thm:symmetric_average}
+For any Pauli-based measurement scheme \(f\), the Hamiltonian \(H_{\mathrm{sym}}^{(f)}\) defined above can be measured using the same scheme \(f\), is unbiased on \(\rho\), and satisfies
+\begin{align}
+        \mathrm{Tr}\!\left(\rho H_{\mathrm{sym}}^{(f)}\right)
+    =
+    \mathrm{Tr}(\rho H),
+    \qquad
+    \mathrm{Var}\!\left[v(H_{\mathrm{sym}}^{(f)},f)\right]
+    \le
+    \mathrm{Var}\!\left[v(H,f)\right].
+\end{align}
+Moreover, if \(\rho\) is full rank, the inequality is strict whenever the block-wise symmetrization changes at least one block, i.e., whenever \(\Pi_s(H_s)\neq H_s\) for some \(s\).
+\end{theorem}
+
+
+\begin{proof}
+First, the symmetrized estimator remains unbiased. Indeed, for every \(g\in G_s\),
+\begin{align}
+    \begin{aligned}
+    \operatorname{Tr}\left(\rho\,U_gH_sU_g^\dagger\right)
+    &=
+    \operatorname{Tr}\left(U_g^\dagger\rho U_g H_s\right)  \\
+    &=
+    \operatorname{Tr}(\rho H_s),
+\end{aligned}
+\end{align}
+where we used \(U_g^\dagger\rho U_g=\rho\). Therefore
+$   \operatorname{Tr}\bigl(\rho\,\Pi_s(H_s)\bigr)
+    =
+    \operatorname{Tr}(\rho H_s),$
+and summing over \(s\) gives
+$ \mathrm{Tr}\pbra{\rho \mathcal{S}_{\mathcal{X}}(H)}=\mathrm{Tr}(\rho H).$
+We now prove the variance inequality. Define the covariance inner product
+\begin{align}
+        \langle A,B\rangle_{\rho,c}
+    :=
+    \frac12\operatorname{Tr}\rho(AB+BA)
+    -
+    \operatorname{Tr}(\rho A)\operatorname{Tr}(\rho B).
+\end{align}
+Then $    \operatorname{Var}_\rho(A)=\langle A,A\rangle_{\rho,c}.$
+Since \(\rho\) is invariant under \(G_s\), the map $ A\mapsto U_gAU_g^\dagger$
+is an isometry under this covariance inner product. Hence the averaging map \(\Pi_s\) is an orthogonal projection. 
+%Thus
+% \begin{align}
+%         H_s=\Pi_s(H_s)+D_s,
+%     \qquad
+%    D_s:=H_s-\Pi_s(H_s),
+% \end{align}
+Define $D_s:=H_s-\Pi_s(H_s),$ then $ H_s=\Pi_s(H_s)+D_s$
+is an orthogonal decomposition, and therefore
+\begin{align}
+        \operatorname{Var}_\rho(H_s)
+    =
+    \operatorname{Var}_\rho(\Pi_s(H_s))
+    +
+    \operatorname{Var}_\rho(D_s).
+\end{align}
+Moreover,
+\begin{align}
+        \operatorname{Tr}(\rho D_s)
+    =
+    \operatorname{Tr}(\rho H_s)
+    -
+    \operatorname{Tr}\bigl(\rho\Pi_s(H_s)\bigr)
+    =
+    0.
+\end{align}
+Therefore
+\begin{align}
+        \operatorname{Var}_\rho(D_s)
+    =
+    \operatorname{Tr}(\rho D_s^2)
+    \ge 0.
+\end{align}
+Hence, for each block,
+\begin{align}
+        \operatorname{Var}_\rho(H_s)
+    -
+    \operatorname{Var}_\rho(\Pi_s(H_s))
+    =
+    \operatorname{Tr}(\rho D_s^2)
+    \ge 0.
+\end{align}
+Since different QWC blocks are estimated from independent shots under the fixed Pauli-based scheme \(f\), we have
+\begin{align}
+    \begin{aligned}
+    \operatorname{Var}[v(H,f)]
+    -
+    \operatorname{Var}[v(\mathcal S_{\mathcal X}(H),f)]
+    &=
+    \sum_{s=1}^S
+    \frac1{N_s}
+    \left[
+        \operatorname{Var}_\rho(H_s)
+        -
+        \operatorname{Var}_\rho(\Pi_s(H_s))
+    \right]  \\
+    &=
+    \sum_{s=1}^S
+    \frac1{N_s}
+    \operatorname{Tr}(\rho D_s^2) \\
+    &\ge 0.
+\end{aligned}
+\end{align}
+This proves
+\begin{align}
+        \operatorname{Var}[v(H,f)]
+    \ge
+    \operatorname{Var}[v(\mathcal S_{\mathcal X}(H),f)].
+\end{align}
+
+The inequality is strict whenever
+\begin{align}
+        \sum_{s=1}^S
+    \frac1{N_s}
+    \operatorname{Tr}(\rho D_s^2)>0.
+\end{align}
+Equivalently, there exists at least one block \(s\) such that $\operatorname{Tr}(\rho D_s^2)>0.$
+% If \(\rho\) is full rank, then \(\operatorname{Tr}(\rho D_s^2)>0\) for every nonzero Hermitian \(D_s\). Thus, under a full-rank symmetric state, the improvement is strict whenever \(D_s\neq 0\) for at least one block, i.e., whenever the coefficients are not already constant on some symmetry orbit contained in a QWC block.
+The variance reduction is strict if and only if
+\begin{align}
+       \exists s
+    \quad\text{such that}\quad
+    \operatorname{Tr}(\rho D_s^2)>0.
+\end{align}
+In particular, if \(\rho\) is full rank, then
+\begin{align}
+        \operatorname{Tr}(\rho D_s^2)>0
+    \quad\Longleftrightarrow\quad
+    D_s\neq 0.
+\end{align}
+Hence, for any full-rank \(G\)-symmetric state, the variance reduction is strict whenever at least one QWC block contains a symmetry orbit on which the coefficients are not all equal:
+\begin{align}
+        \exists s,\ell,\ Q,R\in\mathcal O_{s,\ell}
+    \quad\text{such that}\quad
+    \alpha_Q\neq \alpha_R.
+\end{align}
+Equivalently, $H_s\neq H_{s,\mathrm{sym}}$
+for at least one block \(s\). Therefore, under a full-rank symmetric state,
+\begin{align}
+        H\neq H_{\mathrm{sym}}
+    \quad\Longrightarrow\quad
+    \mathcal V_{\mathrm{QWC}}(H_{\mathrm{sym}})
+    <
+    \mathcal V_{\mathrm{QWC}}(H),
+\end{align}
+provided that the non-symmetric coefficient component is contained within symmetry-closed QWC blocks.
+
+
+\end{proof}
+
+The measurement-compatible symmetric averaging in Theorem~\ref{thm:symmetric_average} should be viewed as a conservative, protocol-preserving use of symmetry. Its main advantage is that, for any fixed Pauli-based measurement protocol \(f\), it keeps the same measurement bases and shot allocation while guaranteeing a no-worse estimator variance. This is particularly useful when the full symmetry orbits of Pauli terms spread across incompatible measurement settings, in which case a global compactification may reduce the intrinsic observable variance but may also increase the cost or variance of the actual Pauli estimator. 
+
+By contrast, the compact protocol applies the full group symmetrization and can exploit more symmetry information from \(G\). It can therefore be more efficient when the symmetrized Pauli terms remain compatible, or when the additional measurement overhead is small compared with the variance reduction obtained from removing large coefficient asymmetries across full symmetry orbits. Thus, the compact protocol is potentially more powerful but may be measurement-structure dependent, whereas the symmetric averaging procedure provides a robust measurement-level guarantee relative to the given Pauli protocol \(f\). In full-rank symmetric states, the latter gives a strict improvement whenever the block-wise averaging changes at least one measurable component of the Hamiltonian. We also illustrate this comparison in Supplementary Figure~\ref{fig:symmetry_average}, where we operate the 8-qubit spin Hamiltonian generated in the main text on the ideal GHZ state.
+}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/symmetry_average.pdf}
+    \caption{\red{Estimation-error comparison of the original Hamiltonian $H$, the compact Hamiltonian, and the symmetry-averaged Hamiltonian for the 8-qubit spin Hamiltonian on the simulated ideal GHZ state. Panels (a)-(d) show the results obtained using Shadow Grouping (SG), Derandomization (Derand), adaptive Pauli measurement (AP), and overlapped grouping measurement (OGM), respectively.}}
+    \label{fig:symmetry_average}
+\end{figure}
+
+\section{III. Application to nonlinear functions}
+Nonlinear properties of quantum states, central to tasks such as entropy estimation and information scrambling, have attracted considerable recent interest~\cite{guhne2009entanglement,ekert2002direct,hamm2005principles,brydges2019probing,cao2023generation}. Here we focus on the estimation of the nonlinear functional $\text{tr}(\rho^2 H)$ of a quantum state $\rho$. 
+
+
+% Since $\Scal(\rho) = \rho$, it follows that $\Scal(\rho^k) = \rho^k$ for any $k \geq 1$. Consequently,  
+% \begin{equation}
+%        \tr{\rho^2 H} = \tr{\rho^2 \Scal(H)}.
+% \end{equation} 
+% Let $T$ denote the $2n$-qubit swap operator that exchanges the $i$-th qubit with the $(n+i)$-th qubit. To optimize quantum resources, we avoid the standard SWAP test and instead exploit the Pauli decomposition of $TH$ for existing Pauli-based algorithms and of $T\Scal(H)$ for our method. In this way, we obtain
+% \begin{equation}
+% \tr{\rho^2 H} = \text{tr} !\left[\rho \otimes \rho \sum_{ij} \beta_{ij} \hat{Q}_i \otimes \hat{Q}_j \right],
+% \label{eq:non_linear_decomp}
+% \end{equation}
+% where $TH = \sum_{ij} \beta_{ij}\, \hat{Q}_i^{(1)} \otimes \hat{Q}_j^{(2)}$, and analogously for $T\Scal(H)$.  We prove the correctness in the following.
+% Let $\mathcal{W}$ denote the $2n$-qubit SWAP channel that swaps the $j$th and $(n+j)$th qubits for each $j \in [n]$. Then
+% \begin{align}
+%    \mathcal{W} (H\otimes \Ibb)&= \sum_{i}\frac{1}{2^n} (P_i \otimes P_i)\sum_j \alpha_j(Q_j\otimes \Ibb)\\
+%     &= \frac{1}{2^n}\sum_{ij} \alpha_j (P_iQ_j) \otimes P_i, \\
+%     &=\sum_{i} \nu_i A_i^{(1)} \otimes A_i^{(2)} + \mathrm{i}\sum_j \mu_j \tr{\rho B^{(1)}_i} \tr{\rho B^{(2)}_i}
+% \end{align}
+% for some $n$-qubit Pauli operators $A_i^{(1)}, B_i^{(1)}$ and $A_{i}^{(2)}, B_{i}^{(2)}$, and real numbers $\nu_i,\mu_i$.
+% Therefore,
+% \begin{align}
+% \tr{\rho^2H} & = \tr{(\rho \otimes \rho) \mathcal{W}(H\otimes \Ibb)}\\
+% &=\sum_i \nu_i\tr{\rho A^{(1)}_i} \tr{\rho A^{(2)}_i} + \mathrm{i}\sum_j \mu_j \tr{\rho B^{(1)}_i} \tr{\rho B^{(2)}_i},\\
+% &=\sum_i \nu_i\tr{\rho A^{(1)}_i} \tr{\rho A^{(2)}_i}
+% \label{eq:rho_square}
+% \end{align}
+% where Eq.~\eqref{eq:rho_square} holds since $tr(\rho^2 H)$ is real.
+% Hence, Eq.~\eqref{eq:non_linear_decomp} naturally extends Pauli-based measurement schemes to nonlinear properties by defining the estimator
+% \begin{equation}
+% v^{(2)}(H,f) = \sum_{k=1}^L \sum_{i,j\in [\sqrt{m}]}\beta_{ij} 
+% \sum_{t=1}^{n_k} \frac{\mu_1(i) \mu_2(j) 
+% }{n_k},
+% \label{eq:non_linear_estimator}
+% \end{equation}
+% where we assume $\sqrt{m}$ is an integer, and $\mu_x(l)  = \mu\!\left(P^{(k,x)} \mid \hat{Q}^{(x)}_{l}\right)$. %\mu\!\left(P^{(k,2)} \mid \hat{Q}^{(2)}_{j}\right)
+% A compact measurement scheme can be constructed analogously to Eq.~\eqref{eq:non_linear_estimator}. 
+
+
+Since $\mathcal{S}(\rho)=\rho$, it follows that $\mathcal{S}(\rho^k)=\rho^k$ for all $k\ge 1$. Consequently,
+\begin{equation}
+    \mathrm{Tr}(\rho^2 H)=\mathrm{Tr}\!\big(\rho^2\,\mathcal{S}(H)\big).
+\end{equation}
+Let $T$ denote the $2n$-qubit SWAP operator that exchanges the $i$th qubit with the $(n+i)$th qubit. To optimize quantum resources, we avoid the SWAP test and instead use a Pauli decomposition of $(H\otimes \mathbb{I})T$ for standard Pauli-based methods, and of $(\mathcal{S}(H)\otimes \mathbb{I})T$ for our scheme. Using the identity $\mathrm{Tr}[(A\otimes B)T]=\mathrm{Tr}(AB)$, we obtain
+\begin{equation}
+    \mathrm{Tr}(\rho^2 H)
+    = \mathrm{Tr}\!\left[(\rho\otimes \rho)\sum_{i,j}\beta_{ij}\,\widehat{Q}_i\otimes \widehat{Q}_j\right],
+    \label{eq:non_linear_decomp}
+\end{equation}
+where
+\[
+(H\otimes \mathbb{I})T \;=\; \sum_{i,j}\beta_{ij}\,\widehat{Q}_i^{(1)}\otimes \widehat{Q}_j^{(2)},
+\]
+and analogously with $H$ replaced by $\mathcal{S}(H)$.
+
+For completeness, recall that the two-copy swap operator is
+\begin{equation}
+    T=\frac{1}{2^n}\sum_{P\in\mathcal{P}_n} P\otimes P,
+    \qquad 
+    \mathcal{P}_n:=\{I,X,Y,Z\}^{\otimes n}.
+\end{equation}
+Writing the Hermitian observable as
+\(H=\sum_j\alpha_j Q_j\), with \(Q_j\in\mathcal{P}_n\) and
+\(\alpha_j\in\mathbb{R}\), gives
+\begin{equation}
+    (H\otimes\mathbb{I})T
+    =
+    \frac{1}{2^n}\sum_j\alpha_j
+    \sum_{P\in\mathcal{P}_n} (Q_jP)\otimes P .
+\end{equation}
+Since products of Pauli strings may acquire phases \(\pm i\), this
+operator may have complex coefficients in a Pauli-product expansion.
+However, for the scalar quantity of interest, we may use the Hermitian
+symmetrization
+\begin{equation}
+    A_H
+    :=
+    \frac{1}{2}\left[(H\otimes\mathbb{I})T
+    +T(H\otimes\mathbb{I})\right].
+\end{equation}
+Indeed, for two identical copies,
+\begin{equation}
+    \mathrm{Tr}\!\left[(\rho\otimes\rho)(H\otimes\mathbb{I})T\right]
+    =
+    \mathrm{Tr}\!\left[(\rho\otimes\rho)A_H\right].
+\end{equation}
+Because \(A_H\) is Hermitian, it admits a Pauli-product expansion with
+real coefficients,
+\begin{equation}
+    A_H=\sum_{i,j}\beta_{ij}\,
+    \widehat{Q}_i\otimes\widehat{Q}_j,
+    \qquad \beta_{ij}\in\mathbb{R},
+\end{equation}
+where \(\widehat{Q}_i,\widehat{Q}_j\in\mathcal{P}_n\). Therefore,
+\begin{align}
+    \mathrm{Tr}(\rho^2H)
+    &=
+    \mathrm{Tr}\!\left[(\rho\otimes\rho)(H\otimes\mathbb{I})T\right]  \notag\\
+    &=
+    \sum_{i,j}\beta_{ij}\,
+    \mathrm{Tr}(\rho\,\widehat{Q}_i)\,
+    \mathrm{Tr}(\rho\,\widehat{Q}_j).
+\end{align}
+
+% For completeness, recall that
+% \begin{equation}
+%     T \;=\; \frac{1}{2^n}\sum_{P\in\mathcal{P}_n} P\otimes P,\qquad 
+%     \mathcal{P}_n:=\{I,X,Y,Z\}^{\otimes n}\,
+% \end{equation}
+% and writing $H=\sum_j \alpha_j Q_j$ with $Q_j\in\mathcal{P}_n$ gives
+% \begin{align}
+%     (H\otimes \mathbb{I})T
+%     &= \frac{1}{2^n}\sum_{j}\alpha_j \sum_{P\in\mathcal{P}_n} (Q_jP)\otimes P
+%      \;=\; \sum_{i,j}\beta_{ij}\,\widehat{Q}^{(1)}_i\otimes \widehat{Q}^{(2)}_j,
+% \end{align}
+% for suitable complex coefficients $\beta_{ij}$. Hence
+% \begin{align}
+%     \mathrm{Tr}(\rho^2 H)
+%     &= \mathrm{Tr}\!\big[(\rho\otimes \rho)\,(H\otimes \mathbb{I})T\big]
+%      \;=\; \sum_{i,j}\beta_{ij}\,\mathrm{Tr}(\rho\,\widehat{Q}^{(1)}_i)\,\mathrm{Tr}(\rho\,\widehat{Q}^{(2)}_j),
+% \end{align}
+% which is real, so any purely imaginary contributions in an intermediate decomposition cancel, and we simplify $\beta_{ij}$ to be real.
+
+Equation~\eqref{eq:non_linear_decomp} thus furnishes a product-Pauli representation suitable for extending Pauli-based measurement schemes to the nonlinear functional $\mathrm{Tr}(\rho^2 H)$. 
+Let $f$ be an optimization function (e.g., OGM) that yields Pauli measurement settings $\{P^{(k,1)}P^{(k,2)}\}_{k=1}^L$ with frequency $\{n_k\}_{k=1}^L$ satisfying $\sum_{k=1}^L n_k = T$.  Define the estimator
+\begin{equation}
+    v^{(2)}(H,f)
+    = \sum_{k=1}^{L}\ \sum_{i,j\in[\sqrt{m}]}\ \beta_{ij}
+      \frac{\sum_{t=1}^{n_k} \mu_1(i)\,\mu_2(j)}{n_k \sum_{k=1}^L \bm 1\cbra{P^{k}\triangleright \hat{Q}_i^{(1)} \otimes \hat{Q}_j^{(2)} }},
+    \label{eq:non_linear_estimator}
+\end{equation}
+where we assume $\sqrt{m}\in\mathbb{N}$ for notational convenience, and
+\[
+\mu_x(\ell)\;=\;\mu\!\left(P^{(k,x)}\mid \widehat{Q}^{(x)}_{\ell}\right),\qquad x\in\{1,2\}.
+\]
+A compact (grouped) measurement scheme is constructed in direct analogy with Eq.~\eqref{eq:non_linear_estimator}.
+
+
+
+\section{IV. Experimental results}
+
+\subsection{A. Details of the two-photon source}
+
+In the experiment, we encode the three-qubit and four-qubit GHZ \cite{greenberger1989} and $W$ states \cite{dur2000three,aguilar2015} in the polarization and path DOFs of a pair of photons from a type-0 spontaneous parametric down-conversion (SPDC) source as shown in \red{Supplementary}  Figure \ref{fig-s}. Here the SPDC sources are pumped by a 779 nm laser with a pulse width of approximately 90 ps and a repetition frequency of 500 MHz \cite{li2022,mao2023}. All pulses are first initialized to the polarization state $|\psi\rangle_p=\cos 2\theta |H\rangle+\sin 2\theta |V\rangle$ using a dual-wavelength half-wave plate (DHWP), where $\theta$ denotes the angle of the fast axis with respect to the vertical. These pulses are then sent into a Sagnac interferometer to drive a type-0 spontaneous parametric down-conversion (SPDC) process in a periodically poled MgO-doped lithium niobate (PPLN) crystal, generating co-polarized photon pairs at phase-matched wavelengths of 1560~nm (signal, labeled by $s$) and 1556~nm (idler, labeled by $i$). This process yields the two-photon polarization state $|\psi\rangle=\cos 2\theta |H_sH_i\rangle+\sin 2\theta |V_sV_i\rangle$. The photon pairs exit from the same port and are separated using a dense wavelength division multiplexer (DWDM). With 80~mW of pump power, we achieved an average photon number of 0.005 per pulse and a two-photon coincidence rate of 20~k/s.
+
+\subsection{B. Details of experimental preparation of $|\text{GHZ}_3\rangle$}
+
+We further prepared multi-qubit symmetric states based on the down-converted photon pair. \red{The photon pair} consists of a signal photon and an idler photon. Subsequently, we send the signal (idler) photon into the upper (lower) part of the state-preparation module. 
+
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{figs/fig-s.pdf}
+	\caption{Experimental preparation of three- and four-qubit GHZ and $W$ states through four steps in the state preparation module.}
+	\label{fig-s}
+\end{figure}
+
+The experimentally prepared three-qubit GHZ state $|\text{GHZ}_3\rangle$ is encoded into the polarization and path degrees of freedom (DOF) of the signal photon and the polarization DOF of the idler photon. We obtain the state $|\text{GHZ}_3\rangle$ by choosing the angle combination $\mathcal{A}=[\frac{\pi}{8},-,\frac{\pi}{4},\frac{\pi}{4},0,0]$, where the minus sign indicates removal of the corresponding HWP. As shown in \red{Supplementary} Figure~\ref{fig-s}, we unfold the systematic evolution of the state through four sequential steps.
+
+\textbf{Step 1.} We set \red{the} polarization state of photon pair to  $|\psi\rangle_1=\frac{1}{\sqrt{2}}(|H_sH_i\rangle+|V_sV_i\rangle)$ by rotating the HWP to $\theta=22.5^\circ$ in the two-photon source. 
+
+\textbf{Step 2.} The state $|\psi\rangle_1$ remains unchanged because the HWP in this part is removed.
+
+\textbf{Step 3.} For the signal photon, we introduce the path DOF by employing a beam displacer (BD$_1$) that transmits horizontally polarized photons to the upper path $|u\rangle$ and reflects vertically polarized photons into the lower path $|l\rangle$. This generates the state $|\psi\rangle_2=\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle)$. Afterwards, the HWP oriented at $\phi_2=45^\circ$ in the path $|l\rangle$ flips the polarization state, while \red{an} HWP set to $0^\circ$ in the path $|u\rangle$ leaves the horizontal polarization state unchanged. They transform the state into $|\psi\rangle_3=\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|H_sl_sV_i\rangle)$. We combine polarized states from different path of \red{the} signal photon using BD$_2$, which flips the path state for vertical polarization state and \red{keeps} it unaltered for horizontal polarization state, therefore the state $|\psi\rangle_3$ is unaffected. At last, a HWP adjusted to $\phi_3=45^\circ$ in the path $|l\rangle$ turns the state into the following \red{form},
+\begin{equation}
+	|\psi\rangle_4=\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle).
+\end{equation}
+
+\textbf{Step 4.} The wave plates placed near BD$_3$ and BD$_4$ are both set to $0^\circ$. For the idler photon, this configuration ensures that the polarization state remains unchanged and guarantees its final emergence exclusively in the path $|u\rangle$. Consequently, we obtain the state as detailed below:
+\begin{equation}
+	|\psi\rangle_5=\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle)\otimes|u_i\rangle=|\text{GHZ}_3\rangle\otimes|u_i\rangle.
+\end{equation}
+Through the four steps described above, the three-qubit GHZ state $|\text{GHZ}_3\rangle$ is implemented.
+
+\subsection{C. Details of experimental preparation of $|W_3\rangle$}
+
+The experimentally prepared three-qubit $W$ state $|W_3\rangle$ is also encoded into the polarization and path DOFs of the signal photon and the polarization DOF of the idler photon. We select angle combination $\mathcal{A}=[\red{\frac{1}{2}\arctan{\sqrt{2}}},\frac{\pi}{4},\frac{\pi}{8},0,0,0]$ to implement the state $|W_3\rangle$. As shown in \red{Supplementary}  Figure~\ref{fig-s}, we decompose the systematic evolution of the state through four sequential steps.
+
+\textbf{Step 1.} The polarization state of photon pair is prepared in   $|\psi\rangle_1=\sqrt{\frac{1}{3}}|H_sH_i\rangle+\sqrt{\frac{2}{3}}|V_sV_i\rangle$ when the HWP is set to $\red{\frac{1}{2}\arctan{\sqrt{2}}\approx 27.35^\circ}$ in the two-photon source. 
+
+\textbf{Step 2.} The idler photon is first transmitted through a HWP oriented at $45^\circ$, switching its polarization state between $|H\rangle$ and $|V\rangle$, to produce the state:
+\begin{equation}
+|\psi\rangle_2=\sqrt{\frac{1}{3}}|H_sV_i\rangle+\sqrt{\frac{2}{3}}|V_sH_i\rangle.
+\end{equation}
+
+\textbf{Step 3.} The signal photon passes through a BD$_1$, which transmits horizontally polarized photons to the upper path $|u\rangle$ and reflects vertically polarized photons into the lower path $|l\rangle$, to introduce path DOF and generate the state  $|\psi\rangle_3=\sqrt{\frac{1}{3}}|H_su_sV_i\rangle+\sqrt{\frac{2}{3}}|V_sl_sH_i\rangle$. 
+Subsequently, the HWP oriented at $\phi_2=22.5^\circ$ in the path $|l\rangle$ transforms the state into $|\psi\rangle_4=\frac{1}{\sqrt{3}}(|H_su_sV_i\rangle+|H_sl_sH_i\rangle-|V_sl_sH_i\rangle)$. The polarized states from different path of signal photon are integrated using BD$_2$, which flips the path state for vertically polarized  state and keeps it unchanged for horizontally polarized state, and brings the state to $|\psi\rangle_5=\frac{1}{\sqrt{3}}(|H_su_sV_i\rangle+|H_sl_sH_i\rangle-|V_su_sH_i\rangle)$. Finally, we place a HWP rotated to $0^\circ$ in the path $|u\rangle$, which brings a $\pi$ phase shift for vertical polarization state and results in a state of the following forms,
+\begin{equation}
+	|\psi\rangle_6=\frac{1}{\sqrt{3}}(|H_su_sV_i\rangle+|H_sl_sH_i\rangle+|V_su_sH_i\rangle).
+\end{equation}
+
+\textbf{Step 4.} For the idler photon, we configure all HWPs positioned near BD$_3$ and BD$_4$ to $0^\circ$.  This maintains the original polarization state, thus ensuring that it can only emerge from the path $|u\rangle$. As a result, we obtain the state as detailed below:
+\begin{equation}
+	|\psi\rangle_7=\frac{1}{\sqrt{3}}(|H_su_sV_i\rangle+|H_sl_sH_i\rangle+|V_su_sH_i\rangle)\otimes|u_i\rangle=|W_3\rangle\otimes|u_i\rangle.
+\end{equation}
+Through the four steps described above, the three-qubit $W$ state $|W_3\rangle$ is implemented.
+
+
+
+\subsection{D. Details of experimental preparation of  $|\text{GHZ}_4\rangle$}
+
+The experimentally prepared four-qubit GHZ state $|\text{GHZ}_4\rangle$ is encoded into the polarization and path DOFs of the signal and idler photons. The state $|\text{GHZ}_4\rangle$ is generated by the angle configuration $\mathcal{A}=[\frac{\pi}{8},-,\frac{\pi}{4},\frac{\pi}{4},\frac{\pi}{4},\frac{\pi}{4}]$, where the minus sign indicates the absence of the HWP. As \red{illustrated} in \red{Supplementary}  Figure~\ref{fig-s}, we divide the systematic evolution of the state into four sequential steps, and simplify the description for better clarity.
+
+\textbf{Step 1.} We prepare the photon pair in the polarization state   $|\psi\rangle_1=\frac{1}{\sqrt{2}}(|H_sH_i\rangle+|V_sV_i\rangle)$ by setting the HWP to $\theta=22.5^\circ$ in the two-photon source. 
+
+\textbf{Step 2.} The state $|\psi\rangle_1$ is unaltered in the absence of the HWP.
+
+\textbf{Step 3.} We direct the signal photon through the optical components shown in Step 3, which include BD$_1$, two pairs of HWPs, and BD$_2$. The subsequent evolution of the state is described as follows:
+\begin{equation}
+	\begin{aligned}
+		|\psi\rangle_1=&\frac{1}{\sqrt{2}}(|H_sH_i\rangle+|V_sV_i\rangle)\\
+		\xrightarrow{\text{BD$_1$}} &\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@45^\circ}} &\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|H_sl_sV_i\rangle)\\
+		\xrightarrow{\text{BD$_2$}} &\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|H_sl_sV_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@45^\circ}} &\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle)=|\psi\rangle_2.
+	\end{aligned}
+\end{equation}
+
+\textbf{Step 4.} The idler photon is propagated through an analogous setup in Step 4, and the final state is obtained as follows:
+\begin{equation}
+	\begin{aligned}
+		|\psi\rangle_2=&\frac{1}{\sqrt{2}}(|H_su_sH_i\rangle+|V_sl_sV_i\rangle)\\
+		\xrightarrow{\text{BD$_3$}} &\frac{1}{\sqrt{2}}(|H_su_sH_iu_i\rangle+|V_sl_sV_il_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@45^\circ}} &\frac{1}{\sqrt{2}}(|H_su_sH_iu_i\rangle+|V_sl_sH_il_i\rangle)\\
+		\xrightarrow{\text{BD$_4$}} &\frac{1}{\sqrt{2}}(|H_su_sH_iu_i\rangle+|V_sl_sH_il_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@45^\circ}} &\frac{1}{\sqrt{2}}(|H_su_sH_iu_i\rangle+|V_sl_sV_il_i\rangle)=|\text{GHZ}_4\rangle.
+	\end{aligned}
+\end{equation}
+Through the four steps described above, the four-qubit GHZ state $|\text{GHZ}_4\rangle$ is implemented.
+
+
+\subsection{E. Details of experimental preparation of  $|W_4\rangle$}
+
+The experimentally prepared four-qubit $W$ state $|W_4\rangle$ is encoded into the polarization and path DOFs of the signal and idler photons. The experimental setting for generating the state $|W_4\rangle$ is characterized by the angle configuration  $\mathcal{A}=[\frac{\pi}{8},\frac{\pi}{4},\frac{\pi}{8},0,\frac{\pi}{8},0]$. As depicted in \red{Supplementary}  Figure~\ref{fig-s}, we outline its systematic evolution through four sequential steps, with a simplified description for clarity.
+
+\textbf{Step 1.} We achieve the polarization state   $|\psi\rangle_1=\frac{1}{\sqrt{2}}(|H_sH_i\rangle+|V_sV_i\rangle)$ of the photon pair by setting the HWP to $\theta=22.5^\circ$ in the two-photon source. 
+
+\textbf{Step 2.} The idler photon is first transmitted through a HWP oriented at $45^\circ$, switching its polarization state between $|H\rangle$ and $|V\rangle$, to produce the state:
+\begin{equation}
+	|\psi\rangle_2=\frac{1}{\sqrt{2}}(|H_sV_i\rangle+|V_sH_i\rangle).
+\end{equation}
+
+\textbf{Step 3.} We send the signal photon into the optical components shown in Step 3, which include BD$_1$, two pairs of HWPs, and BD$_2$. The subsequent evolution of the state is described as follows:
+\begin{equation}
+	\begin{aligned}
+		|\psi\rangle_2=&\frac{1}{\sqrt{2}}(|H_sV_i\rangle+|V_sH_i\rangle)\\
+		\xrightarrow{\text{BD$_1$}} &\frac{1}{\sqrt{2}}(|H_su_sV_i\rangle+|V_sl_sH_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@22.5^\circ}} &\frac{1}{\sqrt{2}}|H_su_sV_i\rangle+\frac{1}{2}|H_sl_sH_i\rangle-\frac{1}{2}|V_sl_sH_i\rangle\\
+		\xrightarrow{\text{BD$_2$}} &\frac{1}{\sqrt{2}}|H_su_sV_i\rangle+\frac{1}{2}|H_sl_sH_i\rangle-\frac{1}{2}|V_su_sH_i\rangle\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@0^\circ}} &\frac{1}{\sqrt{2}}|H_su_sV_i\rangle+\frac{1}{2}|H_sl_sH_i\rangle+\frac{1}{2}|V_su_sH_i\rangle=|\psi\rangle_3.
+	\end{aligned}
+\end{equation}
+
+\textbf{Step 4.} The idler photon is propagated through an analogous setup in Step 4, and the final state is obtained as follows:
+\begin{equation}
+	\begin{aligned}
+		|\psi\rangle_3=&\frac{1}{\sqrt{2}}|H_su_sV_i\rangle+\frac{1}{2}|H_sl_sH_i\rangle+\frac{1}{2}|V_su_sH_i\rangle\\
+		\xrightarrow{\text{BD$_3$}} &\frac{1}{\sqrt{2}}|H_su_sV_il_i\rangle+\frac{1}{2}|H_sl_sH_iu_i\rangle+\frac{1}{2}|V_su_sH_iu_i\rangle\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@22.5^\circ}}
+		&\frac{1}{2}(|H_su_sH_il_i\rangle-|H_su_sV_il_i\rangle+|H_sl_sH_iu_i\rangle+|V_su_sH_iu_i\rangle)\\
+		\xrightarrow{\text{BD$_4$}} &\frac{1}{2}(|H_su_sH_il_i\rangle-|H_su_sV_iu_i\rangle+|H_sl_sH_iu_i\rangle+|V_su_sH_iu_i\rangle)\\
+		\xrightarrow{\text{HWP}_{@0^\circ},\text{HWP}_{@0^\circ}}
+		&\frac{1}{2}(|H_su_sH_il_i\rangle+|H_su_sV_iu_i\rangle+|H_sl_sH_iu_i\rangle+|V_su_sH_iu_i\rangle)=|W_4\rangle.
+	\end{aligned}
+\end{equation}
+Through the four steps described above, the four-qubit $W$ state $|W_4\rangle$ is implemented.
+
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{figs/fig-m.pdf}
+	\caption{\red{Experimental realization of local projective measurements for the polarization and path qubits.}}
+	\label{fig-m}
+\end{figure}
+
+\subsection{F. The realization of experimental projective measurements }
+
+In the measurement module, we conduct local projective measurements on each qubit, as shown in \red{Supplementary}  Figure~\ref{fig-m}. 
+The measurement settings for polarization and path DOFs of the signal (idler) photon are controlled by a combination of wave plates $Q_1\&H_6$ ($Q_3\&H_8$) and $Q_2\&H_7$ ($Q_4\&H_9$), respectively. 
+\red{At the distal end of the setup,} after passing through the fiber polarization beam splitter (FPBS), the \red{transmitted} photons are detected by $D_1$, $D_3$, $D_5$ and $D_7$, while the \red{reflected} photons are detected by $D_2$, $D_4$, $D_6$ and $D_8$.
+
+\red{As a result}, for the signal photon, the responses of detector $D_1$ or $D_2$ ($D_3$ or $D_4$) \red{indicates} that the measurement outcome of polarization qubit is 0 (1), while the click of detector $D_1$ or $D_3$ ($D_2$ or $D_4$) signifies that the measurement outcome of path qubit is 0 (1). Similarly, for the idler photon, the response of detector $D_5$ or $D_6$ ($D_7$ or $D_8$) \red{means} that the measurement outcome of polarization qubit is 0 (1), while the click of detector $D_5$ or $D_7$ ($D_6$ or $D_8$) shows that the measurement outcome of path qubit is 0 (1). In the case of three-qubit states, the detectors $D_6$ and $D_8$, ideally, should not respond, since we did not account for the path d.o.f.~of the idler photon during state preparation.
+
+
+
+\subsection{G. Quantum state tomography of four symmetric states}
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=\linewidth]{figs/GHZ3.pdf}
+	\caption{The (a) real part and (b) imaginary part of the experimentally reconstructed and ideal density matrix of state $|\text{GHZ}_3\rangle$.}
+	\label{GHZ3}
+\end{figure}
+
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=\linewidth]{figs/W3.pdf}
+	\caption{The (a) real part and (b) imaginary part of the experimentally reconstructed and ideal density matrix of state $|W_3\rangle$.}
+	\label{W3}
+\end{figure}
+
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=0.55\linewidth]{figs/GHZ4.pdf}
+	\caption{The (a) real part and (b) imaginary part of the experimentally reconstructed and ideal density matrix of state $|\text{GHZ}_4\rangle$.}
+	\label{GHZ4}
+\end{figure}
+
+\begin{figure}[htbp!]
+	\centering
+	\includegraphics[width=0.55\linewidth]{figs/W4.pdf}
+	\caption{The (a) real part and (b) imaginary part of the experimentally reconstructed and ideal density matrix of state $|W_4\rangle$.}
+	\label{W4}
+\end{figure}
+Before estimating the properties of the quantum state, we characterized the fidelity of the experimentally prepared high-quality quantum state $\rho_{\text{expt}}$ through quantum state tomography \cite{james2001}. 
+
+In the experiment, there are four symmetric states $\{|\text{GHZ}_3\rangle, |W_3\rangle, |\text{GHZ}_4\rangle, |W_4\rangle\}$ that have been prepared. To thoroughly assess the quality of the experimentally prepared states, we perform the quantum state tomography to reconstruct the density matrix $\rho_{\text{expt}}$ using a maximum-likelihood estimation. For each measurement setting, we collect 20000 effective coincidence events. The real and imaginary parts of the experimentally reconstructed and ideal density \red{matrices} of \red{states} are shown in \red{Supplementary}  Figure~\ref{GHZ3}, \red{Supplementary}  Figure~\ref{W3}, \red{Supplementary}  Figure~\ref{GHZ4} and \red{Supplementary}  Figure~\ref{W4}. The state fidelity $F=\text{tr}(\sqrt{\rho_{\text{ideal}}}\rho_{\text{expt}}\sqrt{\rho_{\text{ideal}}})$ is $0.9867\pm0.0003$, $0.9844\pm0.0005$, $0.9817\pm0.0003$ and $0.9741\pm0.0004$, respectively. Here, the error is estimated by repeating the Monte-Carlo simulations ten times, under the assumption of Poissonian statistics for the counts.
+
+
+
+
+
+
+
+
+\subsection{\red{H. Simulation results} }
+\red{Here, we present the simulation results for the noiseless case to demonstrate the robustness of the advantage provided by the compact measurement scheme, which arises from the symmetric properties of quantum states. Specifically, we numerically simulate the expectation values of both linear and nonlinear properties of three- and four-qubit GHZ and W states, using the same Hamiltonians as in the main text. 
+As shown in Supplementary Figure~\ref{fig:simulate_noiseless}, in the absence of noise, all existing algorithms—including the compact scheme—exhibit improved performance. 
+
+
+For comparison, in the experimental results reported in the main text, we observe that the estimates obtained using existing Pauli-measurement methods begin to deviate from the exact values as the measurement budget increases. For the four-qubit spin Hamiltonian considered in the main text, this deviation becomes apparent once the number of measurements exceeds 2000, indicating that noise-induced systematic errors become dominant as statistical fluctuations are reduced. In contrast, the compact scheme remains remarkably robust: its estimation error continues to decrease even when the number of measurements reaches 20,000, demonstrating strong resilience to noise.
+}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/simulate_noiseless.pdf}
+        \caption{\red{Estimation errors for properties of simulated ideal $W$ and GHZ states.  Expectation-value errors for the three-qubit Hamiltonians in the main text with respect to the (a) $W$ state and (b) GHZ state; expectation-value errors for a four-qubit spin Hamiltonian with the (c) $W$ state and (d) GHZ state. Estimation errors of $\text{tr}(\rho^2 H)$ with three-qubit $\rho$ taken as the (e) $W$ state and (f) GHZ state, with $H$ the spin Hamiltonian. Results are shown for our algorithm, the Shadow Grouping method \cite{gresch2025guaranteed}, the derandomized approach \cite{Huang2021Efficient}, the overlapped grouping scheme \cite{wu2023overlapped}, and the adaptive Pauli measurement (AP) \cite{Shlosberg2023Adaptive}; AP is omitted in panels (e–f) due to its inferior accuracy and substantially higher runtime on this task. The estimation error in each point is calculated from the results of 20 independent experiments.}}
+    \label{fig:simulate_noiseless}
+\end{figure}
+
+\red{
+To further assess the scalability of the proposed measurement strategy, we simulate expectation-value estimation for systems with larger numbers of qubits. 
+Specifically, we consider the same class of random spin Hamiltonians as in the main text,
+$H_n=\sum_{i\neq j} J_{ij} Z_i X_j$,
+where the couplings $J_{ij}$ are randomly generated. 
+We benchmark ShadowGrouping (SG), Derandomization (Derand), adaptive Pauli measurements (AP), OGM applied to the original Hamiltonian, and our Compact measurement method. 
+Supplementary Figure~\ref{fig:simulates_large_qubits} reports the estimation errors on $n$-qubit GHZ states for $n=8,12$, and $14$. 
+Across all system sizes, the Compact method consistently achieves substantially smaller estimation errors than the competing approaches over the full range of experimental rounds, demonstrating the effectiveness of the compact representation in larger-qubit regimes. }
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/simulates_large_qubits.pdf}
+    \caption{\red{Estimation error for random spin-model Hamiltonians evaluated on the simulated ideal GHZ state, with the number of qubits (a) $8$,  (b) $12$, and (c) $14$ respectively. }}
+    \label{fig:simulates_large_qubits}
+\end{figure}
+
+
+% \subsection{More experimental results}
+% Here, we give the more experimental results.
+
+
+
+%We also give the simulation results with the tomography GHZ and W states, which are consistent with experimental results.
+
+
+% \begin{comment}
+% \subsection{H. Fidelity calculation of experimental states}
+
+% Since GHZ states are stabilizer states, an $n$-qubit GHZ state can be characterized by the following set of stabilizer generators:
+% \begin{equation}
+%     g_0 = X_1 X_2 \cdots X_n, \quad g_i = Z_i Z_{i+1}, \quad 1 \leq i \leq n-1.
+% \end{equation}
+% As a result, the fidelity with respect to the GHZ state can be efficiently estimated by measuring the expectation values of all stabilizer generators.
+
+% Although W states are not stabilizer states, they also admit a set of characteristic generators~\cite{thth2005entanglement,ding2021efficient}. For instance, the 3-qubit W state is associated with the following generators:
+% \begin{align}
+%         w_0 &= \frac{1}{3}\pbra{Z_1 + 2Y_1 Y_2 Z_3 + 2X_1 Z_2 X_3},\\
+% w_1 &= \frac{1}{3}\pbra{Z_2 + 2Z_1 Y_2 Y_3 + 2X_1 X_2 Z_3},\\
+% w_2 &= \frac{1}{3}\pbra{Z_3 + 2Y_1 Z_2 Y_3 + 2Z_1 X_2 X_3}.
+% \end{align}
+% The four-qubit W state has generators
+% \begin{align}
+%     w_0 &= \frac{1}{2}\pbra{Z_4 + Y_1Z_2Z_3Y_4 + Y_2Z_3Y_4 + Y_3 Y_4}\\
+%     w_1 &= \frac{1}{2}\pbra{Z_3 + Y_1Z_2Y_3 + Y_2 Y_3 + X_3X_4}\\
+%     w_2 &= \frac{1}{2}\pbra{Z_2 + X_2Z_3X_4 + Y_1 Y_2 + X_2X_3}\\
+%     w_3 &= \frac{1}{2}\pbra{Z_1 + X_1Z_2Z_3X_4 + X_1Z_2 X_3 + X_1X_2}.
+%     \end{align}
+% All stabilizers are generated by these generators.
+
+% The fidelities of the generated quantum states are shown in Supplementary Figure~\ref{suppfig:fidelities_qstates}.
+
+
+% \begin{figure}
+%     \centering
+%     \caption{Fidelities of GHZ and $W$ states generated in photonic experiments.}
+%     \label{suppfig:fidelities_qstates}
+% \end{figure}
+
+% \end{comment}
+
+
+
+
+
+\subsection{\red{I. Symmetry-Projected Estimation}}
+\label{subsec:symmetry_projected_estimation}
+\red{In the main text, the compact measurement scheme exploits permutation symmetry
+by replacing the original observable $H$ with its symmetrized counterpart. 
+In this section, we clarify the interpretation of the compact estimator as a
+symmetry-projected estimator for experimentally prepared states that are only
+approximately symmetric, and distinguish the resulting deterministic projection
+bias from finite-shot statistical variance.
+%In this section, we clarify how this replacement should be interpreted when the experimentally prepared state is only approximately symmetric, and we separate the resulting deterministic symmetry-projection bias from the finite-shot statistical variance.
+
+Let $\mathcal{S}_{\mathcal T}$ denote the permutation-twirling map associated
+with the twirling set $\mathcal T$, and define
+\begin{equation}
+    H_{\rm sym}
+    :=
+    \mathcal{S}_{\mathcal T}(H).
+\end{equation}
+For a fixed experimentally prepared state $\hat{\rho}_{\rm exp}$, the compact
+estimator is unbiased with respect to measurement shot noise for the
+symmetrized observable, namely
+\begin{equation}
+    \mathbb{E}_{\rm shot}
+    \left[
+        \hat{v}_{\rm comp}
+        \,\middle|\,
+        \hat{\rho}_{\rm exp}
+    \right]
+    =
+    \operatorname{Tr}
+    \left(
+        \hat{\rho}_{\rm exp}H_{\rm sym}
+    \right).
+    \label{eq:compact_shot_unbiased}
+\end{equation}
+In general, this quantity is different from
+$\operatorname{Tr}(\hat{\rho}_{\rm exp}H)$ if
+$\hat{\rho}_{\rm exp}$ is not exactly permutation symmetric.
+
+The group-twirling map is self-adjoint with respect to the Hilbert--Schmidt
+inner product. Therefore,
+\begin{equation}
+    \operatorname{Tr}
+    \left[
+        \hat{\rho}_{\rm exp}\mathcal{S}_{\mathcal T}(H)
+    \right]
+    =
+    \operatorname{Tr}
+    \left[
+        \mathcal{S}_{\mathcal T}(\hat{\rho}_{\rm exp})H
+    \right].
+    \label{eq:twirl_self_adjoint}
+\end{equation}
+Thus, symmetrizing the Hamiltonian is equivalent to evaluating the original
+Hamiltonian on the permutation-twirled experimental state. This identity is the
+basis for interpreting the compact estimator as a symmetry-projected estimator
+when the experimental state is only approximately symmetric.
+
+For the ideal target states considered in this work, such as the ideal GHZ and
+$W$ states, the state is permutation symmetric:
+\begin{equation}
+    \mathcal{S}_{\mathcal T}(\rho_{\rm id})
+    =
+    \rho_{\rm id}.
+\end{equation}
+Consequently,
+\begin{equation}
+    \operatorname{Tr}(\rho_{\rm id}H)
+    =
+    \operatorname{Tr}(\rho_{\rm id}H_{\rm sym}).
+    \label{eq:ideal_target_invariant}
+\end{equation}
+For an experimentally prepared state, write
+\begin{equation}
+    \hat{\rho}_{\rm exp}
+    =
+    \rho_{\rm id}
+    +
+    \delta\rho ,
+\end{equation}
+and decompose the preparation error into its symmetry-preserving and
+symmetry-breaking components,
+\begin{equation}
+    \delta\rho
+    =
+    \delta\rho_{\parallel}
+    +
+    \delta\rho_{\perp},
+    \qquad
+    \delta\rho_{\parallel}
+    :=
+    \mathcal{S}_{\mathcal T}(\delta\rho),
+    \qquad
+    \delta\rho_{\perp}
+    :=
+    \left(
+        \mathcal{I}
+        -
+        \mathcal{S}_{\mathcal T}
+    \right)(\delta\rho).
+    \label{eq:error_decomposition}
+\end{equation}
+The raw noisy expectation value differs from the ideal symmetric target by
+\begin{equation}
+    \operatorname{Tr}(\hat{\rho}_{\rm exp}H)
+    -
+    \operatorname{Tr}(\rho_{\rm id}H)
+    =
+    \operatorname{Tr}(\delta\rho_{\parallel}H)
+    +
+    \operatorname{Tr}(\delta\rho_{\perp}H).
+    \label{eq:raw_error_decomposition}
+\end{equation}
+By contrast, the compact estimator converges to
+\begin{align}
+    \operatorname{Tr}(\hat{\rho}_{\rm exp}H_{\rm sym})
+    -
+    \operatorname{Tr}(\rho_{\rm id}H)
+    &=
+    \operatorname{Tr}
+    \left[
+        \delta\rho
+        \mathcal{S}_{\mathcal T}(H)
+    \right]                                           \notag \\
+    &=
+    \operatorname{Tr}
+    \left[
+        \mathcal{S}_{\mathcal T}(\delta\rho)H
+    \right]                                           \notag \\
+    &=
+    \operatorname{Tr}(\delta\rho_{\parallel}H).
+    \label{eq:compact_error_decomposition}
+\end{align}
+Therefore, relative to the ideal symmetric target
+$\operatorname{Tr}(\rho_{\rm id}H)$, the symmetry-projected estimator removes
+the contribution from the symmetry-breaking component
+$\delta\rho_{\perp}$ in the linear expectation value. This is the sense in
+which the compact scheme can act as a symmetry-based error-mitigation procedure
+when the dominant experimental imperfection weakly breaks permutation symmetry.
+
+%At the same time, if the target quantity is instead the unsymmetrized noisy
+%experimental value $\operatorname{Tr}(\hat{\rho}_{\rm exp}H)$, then the compact
+% estimator has a deterministic symmetry-projection bias,
+% \begin{equation}
+%     b_{\rm asym}
+%     :=
+%     \operatorname{Tr}(\hat{\rho}_{\rm exp}H_{\rm sym})
+%     -
+%     \operatorname{Tr}(\hat{\rho}_{\rm exp}H).
+%     \label{eq:asym_bias_def}
+% \end{equation}
+% Since $\mathcal{S}_{\mathcal T}$ is an orthogonal projection in the
+% Hilbert--Schmidt inner product, this bias can be written as
+% \begin{equation}
+%     b_{\rm asym}
+%     =
+%     -
+%     \operatorname{Tr}
+%     \left[
+%         \left(
+%             \mathcal{I}
+%             -
+%             \mathcal{S}_{\mathcal T}
+%         \right)(\hat{\rho}_{\rm exp})
+%         \left(
+%             \mathcal{I}
+%             -
+%             \mathcal{S}_{\mathcal T}
+%         \right)(H)
+%     \right].
+%     \label{eq:asym_bias_projected_form}
+% \end{equation}
+% Hence,
+% \begin{equation}
+%     |b_{\rm asym}|
+%     \le
+%     \left\|
+%         \left(
+%             \mathcal{I}
+%             -
+%             \mathcal{S}_{\mathcal T}
+%         \right)(\hat{\rho}_{\rm exp})
+%     \right\|_{1}
+%     \left\|
+%         \left(
+%             \mathcal{I}
+%             -
+%             \mathcal{S}_{\mathcal T}
+%         \right)(H)
+%     \right\|_{\infty}.
+%     \label{eq:asym_bias_bound}
+% \end{equation}
+% This bound shows that the bias vanishes for exactly symmetric experimental
+% states and is controlled by two quantities: the degree of symmetry breaking in
+% the experimental state and the nonsymmetric component of the observable.
+
+% This projection bias is distinct from the statistical variance due to a finite
+% number of measurement shots. For a general target value $v_{\rm tar}\in\cbra{\operatorname{Tr}(\hat{\rho}_{\rm exp}H),\operatorname{Tr}(\hat{\rho}_{\rm id}H)}$, the
+% finite-shot mean-square error of the compact estimator satisfies
+% \begin{equation}
+%     \mathbb{E}_{\rm shot}
+%     \left[
+%         \left(
+%             \hat{v}_{\rm comp}
+%             -
+%             v_{\rm tar}
+%         \right)^2
+%     \right]
+%     =
+%     \operatorname{Var}_{\rm shot}
+%     \left(
+%         \hat{v}_{\rm comp}
+%     \right)
+%     +
+%     \left[
+%         \operatorname{Tr}(\hat{\rho}_{\rm exp}H_{\rm sym})
+%         -
+%         v_{\rm tar}
+%     \right]^2 .
+%     \label{eq:mse_bias_variance}
+% \end{equation}
+% Thus, the variance reported for the compact estimator is the sampling variance
+% for estimating $\operatorname{Tr}(\hat{\rho}_{\rm exp}H_{\rm sym})$. If
+% $v_{\rm tar}=\operatorname{Tr}(\hat{\rho}_{\rm exp}H)$, the second term contains
+% the deterministic bias $b_{\rm asym}$. If
+% $v_{\rm tar}=\operatorname{Tr}(\rho_{\rm id}H)$, the same projection can
+% suppress symmetry-breaking preparation errors and thereby improve the accuracy
+% with respect to the ideal symmetric target.
+
+The same mechanism can be seen at the level of Pauli orbits. Consider a
+permutation orbit $\mathcal O$ of Pauli strings and write
+\begin{equation}
+    H_{\mathcal O}
+    =
+    \sum_{i\in\mathcal O}
+    c_i Q_i ,
+    \qquad
+    \mathcal{S}_{\mathcal T}(H_{\mathcal O})
+    =
+    \bar{c}_{\mathcal O}
+    \sum_{i\in\mathcal O}
+    Q_i ,
+    \qquad
+    \bar{c}_{\mathcal O}
+    =
+    \frac{1}{|\mathcal O|}
+    \sum_{i\in\mathcal O}
+    c_i .
+    \label{eq:pauli_orbit_sym}
+\end{equation}
+Here possible signs generated by the symmetry action are absorbed into the
+definition of the Pauli strings $Q_i$. Let
+\begin{equation}
+    \mu_i
+    :=
+    \operatorname{Tr}(\hat{\rho}_{\rm exp}Q_i),
+    \qquad
+    \bar{\mu}_{\mathcal O}
+    :=
+    \frac{1}{|\mathcal O|}
+    \sum_{i\in\mathcal O}
+    \mu_i .
+\end{equation}
+Then
+\begin{align}
+    &
+    \operatorname{Tr}(\hat{\rho}_{\rm exp}H_{\mathcal O})
+    -
+    \operatorname{Tr}
+    \left[
+        \hat{\rho}_{\rm exp}
+        \mathcal{S}_{\mathcal T}(H_{\mathcal O})
+    \right]
+    \notag \\
+    &\hspace{2em}
+    =
+    \sum_{i\in\mathcal O}
+    \left(
+        c_i
+        -
+        \bar{c}_{\mathcal O}
+    \right)
+    \left(
+        \mu_i
+        -
+        \bar{\mu}_{\mathcal O}
+    \right).
+    \label{eq:orbit_covariance}
+\end{align}
+Therefore, the difference between the raw and compact large-shot limits is the
+orbit-wise covariance between the coefficient fluctuations
+$c_i-\bar{c}_{\mathcal O}$ and the symmetry-breaking fluctuations of the
+measured Pauli expectations $\mu_i-\bar{\mu}_{\mathcal O}$. Symmetrization
+removes this covariance term. This explains why Pauli terms whose ideal
+expectation values vanish can acquire small nonzero values in the experimental
+state, while the symmetry-projected estimator can still remain closer to the
+ideal symmetric target after orbit averaging.
+
+To quantify the projection effect experimentally, we perform an additional
+diagnostic benchmark using reference values computed from the experimentally
+reconstructed density matrix $\hat{\rho}_{\rm exp}$, as shown in Supplementary Figure~\ref{fig:exp_raw_target}. For the linear benchmarks,
+the noisy experimental reference is
+\begin{equation}
+    v_{\rm raw}^{(1)}
+    =
+    \operatorname{Tr}
+    \left(
+        \hat{\rho}_{\rm exp}H
+    \right),
+    \qquad
+    v_{\rm sym}^{(1)}
+    =
+    \operatorname{Tr}
+    \left(
+        \hat{\rho}_{\rm exp}H_{\rm sym}
+    \right).
+    \label{eq:linear_raw_sym_reference}
+\end{equation}
+For the nonlinear benchmark of $\operatorname{Tr}(\rho^2H)$, the corresponding
+raw and symmetry-projected references are
+\begin{equation}
+    v_{\rm raw}^{(2)}
+    =
+    \operatorname{Tr}
+    \left(
+        \hat{\rho}_{\rm exp}^{2}H
+    \right),
+    \qquad
+    v_{\rm sym}^{(2)}
+    =
+    \operatorname{Tr}
+    \left(
+        \hat{\rho}_{\rm exp}^{2}H_{\rm sym}
+    \right).
+    \label{eq:nonlinear_raw_sym_reference}
+\end{equation}
+For a method $a$ and an experimental round number $N$, we compute
+\begin{equation}
+    \epsilon_{\rm exp}^{(k,a)}(N)
+    =
+    \sqrt{
+        \frac{1}{R}
+        \sum_{r=1}^{R}
+        \left|
+            v_{r}^{(k,a)}(N)
+            -
+            v_{\rm raw}^{(k)}
+        \right|^2
+    },
+    \qquad
+    k=1,2 ,
+    \label{eq:exp_reference_rmse}
+\end{equation}
+where $v_r^{(k,a)}(N)$ is the estimate obtained in the $r$th repetition.
+For the linear panels (a-d), $k=1$; for the nonlinear panels (e-f),
+$k=2$. 
+%It shows the residual projection discrepancy of
+%the compact method relative to the unsymmetrized experimental target, while the main text benchmark shows the error relative to the ideal symmetric target.
+}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/exp-fig-data.pdf}
+    \caption{
+   \red{Diagnostic benchmark with respect to the unsymmetrized noisy experimental
+    target reconstructed by quantum state tomography. The six panels correspond
+    to the same benchmark instances as  Figure~3 of the main text. Panels
+    (a)--(b) show expectation-value estimation for the randomly generated
+    three-qubit Hamiltonian on the $W$ and GHZ states, respectively. Panels
+    (c)--(d) show expectation-value estimation for the four-qubit spin
+    Hamiltonian on the $W$ and GHZ states. Panels (e)--(f) show the nonlinear
+    benchmark for $\operatorname{Tr}(\rho^2H)$ on the $W$ and GHZ states.
+    Unlike Figure~3, where the reference value is the ideal symmetric target, the
+    reference values here are computed from the experimentally reconstructed
+    state: $v_{\rm raw}^{(1)}=\operatorname{Tr}(\hat{\rho}_{\rm exp}H)$ for
+    panels (a)--(d), and
+    $v_{\rm raw}^{(2)}=\operatorname{Tr}(\hat{\rho}_{\rm exp}^{2}H)$ for panels
+    (e)--(f). All methods are evaluated against the same noisy experimental
+    reference. This comparison separates finite-shot sampling fluctuations from
+    the deterministic symmetry-projection discrepancy introduced when the
+    compact method estimates
+    $H_{\rm sym}=\mathcal{S}_{\mathcal T}(H)$ instead of the original
+    observable $H$ for an approximately symmetric experimental state.
+    } }
+    \label{fig:exp_raw_target}
+\end{figure}
+
+
+
+\red{\section{V. Comparison of variances across different methods}}
+
+\red{
+In Figure~3 of the main text, the estimation error is reported as the root-mean-square error (RMSE) over $R=20$ independent repetitions. 
+ As a complement, we provide here a direct comparison of the empirical variances of the estimators obtained by different methods. 
+
+
+{
+For the OGM baseline~\cite{wu2023overlapped}, we compute the variance using the single-shot estimator induced by the optimized overlapped-grouping distribution. 
+Let $H=\sum_{j=1}^{m}\alpha_j Q_j$ denote the Pauli-string decomposition of the Hamiltonian. 
+The OGM procedure constructs a collection of Pauli measurement bases $\{P_s\}_{s=1}^{S}$ together with a sampling distribution $\{\Pcal_s\}_{s=1}^{S}$. 
+We write $Q_j\triangleright P_s$ if the Pauli string $Q_j$ can be inferred from measurements in the basis $P_s$. 
+The corresponding effective measurement probability of $Q_j$ is $\Kcal_j:=\Kcal(Q_j)=\sum_{s=1}^{S}\Pcal_s\,\mathbf 1\{Q_j\triangleright P_s\}$. 
+For a single measurement shot, in which $P_s$ is sampled with probability $\Pcal_s$, the OGM estimator takes the general form defined in Eqs.~\eqref{eq:framework_meas} and~\eqref{eq:general_estimator}. 
+The Derand and SG estimators can be written in the same form, with the optimized OGM distribution replaced by the corresponding method-dependent measurement distribution $\Pcal$.
+
+The corresponding single-shot variance is computed as
+\begin{align}
+    \mathrm{Var}_{\mathrm{OGM}}^{(1)}
+    =
+    \sum_{j,k=1}^{m}
+    \alpha_j\alpha_k
+    G_{jk}\,
+    \mathrm{Tr}(\rho Q_jQ_k)
+    -
+    \bigl[\mathrm{Tr}(\rho H)\bigr]^2,
+    \label{eq:variance_ogm_single}
+\end{align}
+where
+\[
+    G_{jk}
+    =
+    \frac{
+    \sum_{s=1}^{S}
+    \Pcal_s\,
+    \mathbf 1\{Q_j\triangleright P_s\}
+    \mathbf 1\{Q_k\triangleright P_s\}
+    }{
+    \Kcal_j\Kcal_k
+    } .
+\]
+Thus, for $T$ independent measurement shots sampled from the OGM distribution, the variance of the averaged estimator is
+\begin{equation}
+    \mathrm{Var}_{\mathrm{OGM}}^{(T)}
+    =
+    \frac{\mathrm{Var}_{\mathrm{OGM}}^{(1)}}{T}.
+    \label{eq:variance_OGM_T_rounds}
+\end{equation}
+
+The same variance formula can be used to evaluate deterministic or adaptive measurement schedules through their empirical sampling distributions. 
+For an algorithm $\mathrm A\in\{\mathrm{Derand},\mathrm{AP},\mathrm{SG}\}$, let $\{P_t^{(\mathrm A)}\}_{t=1}^{T}$ denote the measurement sequence generated by the algorithm. 
+The empirical distribution over full Pauli measurement bases is
+\[
+    \Pcal_{\mathrm A}(P)
+    =
+    \frac{1}{T}
+    \sum_{t=1}^{T}
+    \mathbf 1\{P_t^{(\mathrm A)}=P\}.
+\]
+For a Pauli string $Q_j$, its hit count under algorithm $\mathrm A$ is
+\[
+    h_j^{(\mathrm A)}
+    :=
+    \sum_{t=1}^{T}
+    \mathbf 1\{Q_j\triangleright P_t^{(\mathrm A)}\},
+\]
+where $Q_j\triangleright P$ means that $Q_j$ can be inferred from measurements in the basis $P$. 
+The corresponding effective measurement probability is therefore $\Kcal_j^{(\mathrm A)}=h_j^{(\mathrm A)}/T$. 
+For adaptive protocols such as AP, the empirical distribution is understood conditionally on the realized measurement sequence.
+
+Under this empirical-distribution interpretation, algorithm $\mathrm A$ can be written in the same overlapped-grouping form, with the OGM sampling distribution replaced by $\Pcal_{\mathrm A}$. 
+Its single-shot variance is therefore
+\begin{equation}
+    \mathrm{Var}_{\mathrm A}^{(1)}
+    =
+    \sum_{j,k=1}^{m}
+    \alpha_j\alpha_k
+    G_{jk}^{(\mathrm A)}
+    \mathrm{Tr}(\rho Q_jQ_k)
+    -
+    \bigl[\mathrm{Tr}(\rho H)\bigr]^2,
+\end{equation}
+where
+\[
+    G_{jk}^{(\mathrm A)}
+    =
+    \frac{
+    \sum_{P}
+    \Pcal_{\mathrm A}(P)\,
+    \mathbf 1\{Q_j\triangleright P\}
+    \mathbf 1\{Q_k\triangleright P\}
+    }{
+    \Kcal_j^{(\mathrm A)}\Kcal_k^{(\mathrm A)}
+    } .
+\]
+Equivalently, defining the joint hit count as
+\[
+    h_{jk}^{(\mathrm A)}
+    :=
+    \sum_{t=1}^{T}
+    \mathbf 1\{Q_j\triangleright P_t^{(\mathrm A)}\}
+    \mathbf 1\{Q_k\triangleright P_t^{(\mathrm A)}\},
+\]
+we obtain the compact expression $G_{jk}^{(\mathrm A)}=T h_{jk}^{(\mathrm A)}/\bigl(h_j^{(\mathrm A)}h_k^{(\mathrm A)}\bigr)$.
+}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{figs/supp_variance.pdf}
+    \caption{\red{Variance of expectation-value estimators for noisy experimental states. Variance for the randomly generated three-qubit Hamiltonian used in the main text, evaluated on the experimental noisy (a) W state and (b) GHZ state. Variance for the four-qubit spin Hamiltonian used in the main text, evaluated on the experimental noisy (c) W state and (d) GHZ state. Variance for estimating $\tr{\rho^2H}$, where the three-qubit state $\rho$ is taken to be the experimental noisy (e) W state and (f) GHZ state, and $H$ denotes the corresponding spin Hamiltonian.}}
+    \label{fig:variance}
+\end{figure}
+{The resulting variance curves are shown in Supplementary Figure~\ref{fig:variance}, and the corresponding single-shot variance estimates are summarized in Supplementary Table~\ref{tab:variance_maxT_experiment}. 
+For small $T$, the empirical variance may still be affected by finite-schedule fluctuations and by the discreteness of the selected measurement sequence. 
+For sufficiently large $T$, however, the variance follows the expected $1/T$ scaling of an averaged estimator, so the rescaled quantity $T\,\mathrm{Var}^{(T)}$ becomes approximately stable. 
+This behavior is observed in Supplementary Figure~\ref{fig:variance}, indicating that the large-$T$ data capture the underlying single-shot variance. 
+Therefore, in Supplementary Table~\ref{tab:variance_maxT_experiment}, we report the single-shot variance by taking the data point with the largest available $T$ and using $\mathrm{Var}^{(1)}=T\,\mathrm{Var}^{(T)}$.
+
+}
+
+\begin{table}[t]
+    \centering
+    \caption{\red{Variance of estimators for different algorithms, computed from the measurement distribution generated with $T=25{,}848$ measurements.}}
+    \label{tab:variance_maxT_experiment}
+    \renewcommand{\arraystretch}{1.18}
+    \setlength{\tabcolsep}{7pt}
+    \begin{adjustbox}{max width=\textwidth}
+    \begin{tabular}{llrrrrr}
+        \toprule
+        \textbf{State} & \textbf{Observable} 
+        & \multicolumn{1}{c}{\textbf{Derand}} 
+        & \multicolumn{1}{c}{\textbf{OGM}} 
+        & \multicolumn{1}{c}{\textbf{AP}} 
+        & \multicolumn{1}{c}{\textbf{SG}} 
+        & \multicolumn{1}{c}{\textbf{Compact}} \\
+        \midrule
+        \multirow{3}{*}{$W$}
+            & SpinH          & 79.10  & 12.42 & 12.79 & 11.44 & 0.60  \\
+            & RandH          & 0.19   & 0.07  & 0.08  & 0.08  & 0.02  \\
+            & nonlinear SpinH & 36.12  & 32.82 & --    & 35.84 & 12.81 \\
+        \midrule
+        \multirow{3}{*}{GHZ}
+            & SpinH          & 114.42 & 17.25 & 18.13 & 16.20 & 0.72  \\
+            & RandH          & 0.18   & 0.06  & 0.07  & 0.07  & 0.02  \\
+            & nonlinear SpinH & 30.52  & 28.17 & --    & 30.54 & 10.62 \\
+        \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+\end{table}
+
+}
+
+\newpage
+\bibliography{ref}
+
+\end{document}
+
+
+%For each method, the variance is computed from the same $R$ independent estimates $\{v_r\}_{r=1}^R$ used in Supplementary Figure~3, given by
+% \begin{equation}
+%     \widehat{\mathrm{Var}} = \frac{1}{R-1}\sum_{r=1}^R \bigl(v_r - \bar{v}\bigr)^2,
+% \end{equation}
+% where $\bar{v} = \frac{1}{R}\sum_{r=1}^R v_r.$
+% The results are shown in Supplementary Figure~\ref{var}.
+
+% \begin{figure}[htbp!]
+% 	\centering
+% 	\includegraphics[width=\linewidth]{figs/var-fig-data.pdf}
+% 	\caption{Estimation variances for properties of $W$ and GHZ states.  Expectation-value estimation variances for a randomly generated three-qubit Hamiltonian with respect to the (a) $W$ state and (b) GHZ state; expectation-value estimation variances for a four-qubit spin Hamiltonian with the (c) $W$ state and (d) GHZ state. Estimation variances of $\text{tr}(\rho^2 H)$ with three-qubit $\rho$ taken as the (e) $W$ state and (f) GHZ state, with $H$ a spin Hamiltonian.}
+% 	\label{var}
+% \end{figure}
