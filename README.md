@@ -93,11 +93,10 @@ postprocessing/test_outputs/fig3_noiseless/results/
 
 `si_fig8/code/build_plot_data.py` 输出：
 
-- `si_fig8/outputs/all_generated_data.csv`：保留模拟生成的全部数据点。
 - `si_fig8/outputs/si_fig8_plot_data_as_published.csv`：严格复现现有 PDF 中实际使用的数据点。
 - `si_fig8/outputs/published_si_fig8.pdf`：论文最终图。
 
-重要核查结果：原绘图文件对每个数据系列无条件执行“删除第 5 行”。旧实验数据的第 5 行是 1000 shots，但当前 noiseless 输入没有 1000-shot 行，第 5 行实际是 2038 shots。因此现有 SI Fig. 8 PDF 的曲线从 572 直接连接到 7259，虽然 x 轴仍显示 2038。`all_generated_data.csv` 保留了 2038 数据；`si_fig8_plot_data_as_published.csv` 则保留论文 PDF 的现状。该差异不能当作数值模拟缺失。
+重要核查结果：原绘图文件对每个数据系列无条件执行“删除第 5 行”。旧实验数据的第 5 行是 1000 shots，但当前 noiseless 输入没有 1000-shot 行，第 5 行实际是 2038 shots。因此现有 SI Fig. 8 PDF 的曲线从 572 直接连接到 7259，虽然 x 轴仍显示 2038。本发布包按论文 PDF 的现状只保留实际使用的数据点，`si_fig8_plot_data_as_published.csv` 中不包含 2038-shot 行。
 
 ## SI Fig. 9
 

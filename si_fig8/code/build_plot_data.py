@@ -17,7 +17,6 @@ OUTPUT_ROOT = FIGURE_ROOT / "outputs"
 
 def main() -> None:
     rows = load_estimator_rows(INPUT_ROOT, six_panel_specs())
-    write_estimator_csv(OUTPUT_ROOT / "all_generated_data.csv", rows)
     # The MATLAB scripts used for the archived PDF delete row 5 in every series.
     # In the current noiseless inputs, row 5 is the 2038-shot point.
     write_estimator_csv(
