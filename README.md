@@ -165,8 +165,5 @@ The inputs and variance calculation are the same as Supplementary Figure 11. The
 - `pauli_*.csv` maps each detector file number to its physical local-Pauli basis.
 - `CHECKSUMS.sha256` records all checked-in input hashes.
 
-## Reproducibility and audit notes
-
-6. **Supplementary Table 1 caption mismatch.** The manuscript says the distributions were generated with `T=25,848`, while the historical nonlinear schedules stop at `T=7,259`. This runner reports the continuous-distribution single-shot variance directly, so its meaning is unambiguous.
 
 For a fast smoke test of the simulation/experimental runners, use `--quick`; it uses shots `12,45` and two repetitions. `--quick` is for code validation, not for paper-level statistics.
