@@ -165,8 +165,8 @@ def lexicographic_permutation_twirl(hamiltonian: Hamiltonian) -> Hamiltonian:
 def generate_spin_hamiltonian(num_qubits: int, seed: int) -> tuple[np.ndarray, Hamiltonian]:
     """Generate H=sum_(i!=j) J_ij Z_i X_j with the paper's NumPy RNG convention."""
 
-    legacy_rng = np.random.RandomState(seed)
-    couplings = legacy_rng.uniform(-1.0, 1.0, size=(num_qubits, num_qubits))
+    rng = np.random.RandomState(seed)
+    couplings = rng.uniform(-1.0, 1.0, size=(num_qubits, num_qubits))
     np.fill_diagonal(couplings, 0.0)
     paulis: list[np.ndarray] = []
     coefficients: list[float] = []

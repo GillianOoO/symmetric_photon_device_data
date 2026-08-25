@@ -140,7 +140,7 @@ def simulate_symmetry_average(
             )
             column = shot_positions[int(total_shots)]
             estimates[repeat, column] = estimate
-            uncovered[column] = missed
+            uncovered[column] = max(uncovered[column], missed)
 
     return {
         int(total_shots): EstimateBatch(estimates[:, index], int(uncovered[index]))

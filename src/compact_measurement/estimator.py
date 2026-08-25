@@ -22,6 +22,15 @@ class EstimateBatch:
     uncovered_terms: int
 
 
+def rmse_against_full_reference(estimates: np.ndarray, full_reference: float) -> float:
+    """Compute RMSE against the complete observable, including zero-filled terms."""
+
+    values = np.asarray(estimates, dtype=float)
+    if values.size == 0:
+        raise ValueError("At least one estimate is required")
+    return float(np.sqrt(np.mean((values - float(full_reference)) ** 2)))
+
+
 def _physical_setting(setting: np.ndarray) -> np.ndarray:
     result = np.asarray(setting, dtype=int).copy()
     result[result == 0] = 3
@@ -43,9 +52,12 @@ def _estimate_from_moments(
         coverage[indices] += count
         totals[indices] += setting_moments[setting_tuple][masks[indices]]
     measured = coverage > 0
-    estimate = hamiltonian.offset
-    estimate += float(
-        np.sum(hamiltonian.coefficients[measured] * totals[measured] / coverage[measured])
+    # Terms absent from this fixed schedule have estimate zero. The caller still
+    # compares the total estimate with the complete-observable reference.
+    term_estimates = np.zeros(hamiltonian.num_terms, dtype=float)
+    np.divide(totals, coverage, out=term_estimates, where=measured)
+    estimate = hamiltonian.offset + float(
+        np.dot(hamiltonian.coefficients, term_estimates)
     )
     return estimate, int(np.count_nonzero(~measured))
 
@@ -198,12 +210,12 @@ def _unbiased_estimate_from_moments(
         totals[indices] += setting_moments[setting_tuple][masks[indices]]
         realized_coverage[indices] += count
 
+    # A term not realized in this random schedule has total zero and therefore a
+    # zero contribution in this repeat. Inverse coverage keeps the estimator
+    # unbiased over schedule randomness.
+    term_estimates = totals / (float(total_shots) * hit_probabilities)
     estimate = hamiltonian.offset + float(
-        np.sum(
-            hamiltonian.coefficients
-            * totals
-            / (float(total_shots) * hit_probabilities)
-        )
+        np.dot(hamiltonian.coefficients, term_estimates)
     )
     return estimate, int(np.count_nonzero(realized_coverage == 0))
 
@@ -381,7 +393,7 @@ def summarize_batches(
                 "mean_estimate": mean_estimate,
                 "bias": mean_estimate - float(reference),
                 "standard_deviation": float(np.std(estimates, ddof=0)),
-                "rmse": float(np.sqrt(np.mean((estimates - reference) ** 2))),
+                "rmse": rmse_against_full_reference(estimates, reference),
                 "uncovered_terms": int(batch.uncovered_terms),
                 "estimates": [float(value) for value in estimates],
             }

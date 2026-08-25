@@ -23,7 +23,7 @@ src/compact_measurement/
   sym_average.py         Measurement-compatible symmetry averaging
   variance.py            Exact OGM single-shot variance
 main_fig3/run.py
-nonlinear_corrected/run.py
+nonlinear properties/run.py
 si_fig1/run.py
 si_fig8/run.py
 si_fig9/run.py
@@ -65,7 +65,7 @@ For the nonlinear panels, the code first twirls the physical 3-qubit `H_3`, then
 ((H tensor I) SWAP + SWAP (H tensor I)) / 2.
 ```
 
-All positive and negative real Pauli coefficients are retained. The corrected original and Compact expansions each contain 192 terms; the historical positive-only files contained 128 and 144 terms, respectively. Twirling the already expanded 6-qubit file would be incorrect.
+Terms in the two-copy expansion are selected by absolute coefficient magnitude, so both positive and negative real coefficients are retained. For `H_3`, the original and Compact expansions each contain 192 terms. The physical 3-qubit Hamiltonian is twirled before constructing the 6-qubit observable.
 
 The nonlinear simulator and raw-count estimator use the inverse-coverage OGM estimator. Measurement settings are sampled from the optimized distribution, and each Pauli contribution is divided by its design hit probability. This remains unbiased at low `T` even when a particular realized schedule does not hit every term. Experimental two-copy shots use separate, non-overlapping detector outcomes for the two copies, including when both halves request the same basis.
 
@@ -83,7 +83,7 @@ Entry point: `main_fig3/run.py`
 python main_fig3/run.py
 ```
 
-This is the raw experimental-count path. Each point uses 20 disjoint blocks from the relevant ZIP archive. RMSE is evaluated against the ideal symmetric-state reference, as in the main comparison.
+This is the raw experimental-count path. Each panel uses 20 independent repetitions from the relevant ZIP archive. RMSE is evaluated against the ideal symmetric-state reference, as in the main comparison.
 
 | Panels | Observable/state | Hamiltonian input | State/count input |
 |---|---|---|---|
@@ -91,17 +91,19 @@ This is the raw experimental-count path. Each point uses 20 disjoint blocks from
 | c-d | 4-qubit spin `tr(rho H)`, W/GHZ | `inputs/hamiltonians/H_4.txt` | `bin_W4.zip`, `bin_GHZ4.zip`, and matching basis CSV |
 | e-f | 3-qubit `tr(rho^2 H)`, W/GHZ | `inputs/hamiltonians/H_3.txt` | two independent slices of `bin_W3.zip` or `bin_GHZ3.zip` |
 
-Default linear shot counts are `12, 45, 160, 572, 2038, 7259, 25848`; nonlinear panels use `12, 45, 160, 572, 2038, 7259`. Output rows contain the 20 estimates, their mean, standard deviation, RMSE, and uncovered-term count.
+Default linear shot counts are `12, 45, 160, 572, 2038, 7259, 25848`; nonlinear panels use `12, 45, 160, 572, 2038, 7259`. Every output row contains 20 estimates, together with their mean, standard deviation, RMSE, and uncovered-term count.
 
-### Corrected nonlinear rerun
+### Nonlinear properties
 
-Entry point: `nonlinear_corrected/run.py`
+Entry point: `nonlinear properties/run.py`
 
 ```bash
-python nonlinear_corrected/run.py --output-dir /path/to/output
+python "nonlinear properties/run.py" --output-dir /path/to/output
 ```
 
-This focused runner regenerates the signed original and Compact two-copy Hamiltonians, both OGM measurement distributions, ideal W/GHZ simulation errors, raw experimental-count errors, and exact single-shot variances. RMSE is always evaluated against the direct target `Tr(rho^2 H_3)`, never against the historical positive-only observable. Generated JSON, CSV, Hamiltonian, and measurement-design files are written only to the requested output directory.
+This runner generates the original and Compact two-copy Hamiltonians, both OGM measurement distributions, ideal W/GHZ simulation errors, raw experimental-count errors, and exact single-shot variances. It uses 20 independent repetitions by default. Experimental estimators are summarized against both the ideal-state reference used by Main Figure 3 and the tomography reference used by Supplementary Figure 10. Generated JSON, CSV, Hamiltonian, and measurement-design files are written only to the requested output directory.
+
+For every method, a Pauli term not covered in a particular repeat is assigned a zero estimate for that repeat. The total estimate is then compared with the full-observable reference, not with the expectation value of the covered sub-Hamiltonian. In formulas, `error_r = estimator_r - Tr(rho^2 H_3)` and RMSE is computed from these full-reference errors. OGM and Compact additionally apply inverse-coverage weights to terms realized in the sampled schedule.
 
 ### Supplementary Figure 1
 

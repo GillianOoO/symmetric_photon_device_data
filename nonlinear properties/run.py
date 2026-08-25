@@ -17,7 +17,8 @@ from compact_measurement.hamiltonian import (  # noqa: E402
 from compact_measurement.nonlinear import two_copy_observable  # noqa: E402
 from compact_measurement.workflows import (  # noqa: E402
     HAMILTONIAN_ROOT,
-    run_corrected_nonlinear_errors,
+    DEFAULT_REPEATS,
+    run_nonlinear_properties,
 )
 
 
@@ -37,7 +38,11 @@ def write_summary_csv(path: Path, payload: dict[str, object]) -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         for state in payload["states"]:
-            for source in ("ideal_simulation", "experimental_counts"):
+            for source in (
+                "ideal_simulation",
+                "experimental_counts_ideal_reference",
+                "experimental_counts_tomography_reference",
+            ):
                 for row in state[source]:
                     writer.writerow(
                         {
@@ -68,12 +73,12 @@ def write_design_csv(path: Path, design: dict[str, object]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Recompute corrected signed nonlinear errors for W3 and GHZ3."
+        description="Generate nonlinear Compact data for W3 and GHZ3."
     )
     parser.add_argument(
         "--shots", nargs="+", type=int, default=[12, 45, 160, 572, 2038, 7259]
     )
-    parser.add_argument("--repeats", type=int, default=20)
+    parser.add_argument("--repeats", type=int, default=DEFAULT_REPEATS)
     parser.add_argument("--seed", type=int, default=20260511)
     parser.add_argument("--ogm-budget", type=int, default=100000)
     parser.add_argument("--quick", action="store_true")
@@ -81,15 +86,15 @@ def main() -> None:
     args = parser.parse_args()
 
     shots = [12, 45] if args.quick else args.shots
-    repeats = 2 if args.quick and args.repeats == 20 else args.repeats
+    repeats = 2 if args.quick and args.repeats == DEFAULT_REPEATS else args.repeats
     output_dir = args.output_dir.expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    payload = run_corrected_nonlinear_errors(
+    payload = run_nonlinear_properties(
         shots, repeats, args.seed, args.ogm_budget
     )
-    json_path = output_dir / "nonlinear_signed_errors.json"
-    csv_path = output_dir / "nonlinear_signed_errors.csv"
+    json_path = output_dir / "nonlinear_properties.json"
+    csv_path = output_dir / "nonlinear_properties.csv"
     json_path.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
         encoding="utf-8",
@@ -99,18 +104,18 @@ def main() -> None:
     physical = load_hamiltonian(HAMILTONIAN_ROOT / "H_3.txt")
     original = two_copy_observable(physical)
     compact = two_copy_observable(paper_permutation_twirl(physical))
-    original_path = output_dir / "H_swap_3_signed.txt"
-    compact_path = output_dir / "sym_H_swap_3_signed.txt"
+    original_path = output_dir / "H_swap_3.txt"
+    compact_path = output_dir / "sym_H_swap_3.txt"
     save_hamiltonian(original_path, original)
     save_hamiltonian(compact_path, compact)
 
-    original_design_path = output_dir / "OGM_H_swap_3_signed.csv"
-    compact_design_path = output_dir / "OGM_sym_H_swap_3_signed.csv"
+    original_design_path = output_dir / "OGM_H_swap_3.csv"
+    compact_design_path = output_dir / "OGM_sym_H_swap_3.csv"
     write_design_csv(
-        original_design_path, payload["measurement_designs"]["original_signed"]
+        original_design_path, payload["measurement_designs"]["original"]
     )
     write_design_csv(
-        compact_design_path, payload["measurement_designs"]["compact_signed"]
+        compact_design_path, payload["measurement_designs"]["compact"]
     )
 
     for path in (

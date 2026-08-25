@@ -19,15 +19,13 @@ _PAULI_PRODUCT = {
 
 def two_copy_observable(
     hamiltonian: Hamiltonian,
-    paper_positive_only: bool = False,
     tolerance: float = 1e-12,
 ) -> Hamiltonian:
     """Expand the Hermitian two-copy observable for ``Tr(rho^2 H)``.
 
     The returned operator is the Hermitian part of ``(H tensor I) SWAP``.
-    Its Pauli coefficients are the real parts of the unsymmetrized expansion,
-    including negative values. ``paper_positive_only=True`` is retained only
-    to reproduce the historical publication files.
+    Its Pauli coefficients are the real parts of the unsymmetrized expansion.
+    Every coefficient whose absolute value exceeds ``tolerance`` is retained.
     """
 
     num_qubits = hamiltonian.num_qubits
@@ -50,10 +48,7 @@ def two_copy_observable(
     rows: list[tuple[tuple[int, ...], float]] = []
     for pauli, coefficient in sorted(terms.items()):
         real = float(coefficient.real)
-        if paper_positive_only:
-            if real > tolerance:
-                rows.append((pauli, real))
-        elif abs(real) > tolerance:
+        if abs(real) > tolerance:
             rows.append((pauli, real))
     paulis = np.asarray([pauli for pauli, _ in rows], dtype=int).reshape(
         -1, 2 * num_qubits

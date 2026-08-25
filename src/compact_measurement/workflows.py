@@ -36,6 +36,7 @@ EXPERIMENT_ROOT = INPUTS_ROOT / "experimental_counts"
 
 LINEAR_SHOTS = [12, 45, 160, 572, 2038, 7259, 25848]
 NONLINEAR_SHOTS = [12, 45, 160, 572, 2038, 7259]
+DEFAULT_REPEATS = 20
 
 
 @dataclass(frozen=True)
@@ -96,6 +97,8 @@ def run_six_panel_compact(
         raise ValueError("source must be 'experiment' or 'simulation'")
     if reference_kind not in {"ideal", "tomography"}:
         raise ValueError("reference_kind must be 'ideal' or 'tomography'")
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
 
     design_cache: dict[str, object] = {}
     archive_cache: dict[tuple[str, int], ExperimentalArchive] = {}
@@ -122,7 +125,7 @@ def run_six_panel_compact(
             reference = direct_nonlinear_expectation(reference_single_rho, physical)
             expanded_reference = expectation(reference_rho, original)
             if not np.isclose(reference, expanded_reference, atol=1e-10):
-                raise ValueError("Signed two-copy expansion does not match Tr(rho^2 H)")
+                raise ValueError("Two-copy expansion does not match Tr(rho^2 H)")
         else:
             reference_observable = compact if reference_is_noisy else original
             reference = expectation(reference_rho, reference_observable)
@@ -189,6 +192,7 @@ def run_six_panel_compact(
                     else f"analytic {case.state}{case.num_qubits} state"
                 ),
                 "method": "Compact (permutation twirl + OGM)",
+                "repeats": int(repeats),
                 "num_compact_terms": compact.num_terms,
                 "num_measurement_settings": int(len(design.settings)),
                 "ogm_diagonal_objective": float(design.diagonal_objective),
@@ -200,7 +204,7 @@ def run_six_panel_compact(
     return {
         "source": source,
         "error_reference": reference_kind,
-        "repeats": repeats,
+        "repeats": int(repeats),
         "panels": panels,
     }
 
@@ -219,17 +223,15 @@ def _design_payload(design) -> dict[str, object]:
     }
 
 
-def run_corrected_nonlinear_errors(
+def run_nonlinear_properties(
     shots: list[int], repeats: int, seed: int, ogm_budget: int
 ) -> dict[str, object]:
-    """Recompute the signed nonlinear Compact estimator for W3 and GHZ3."""
+    """Generate nonlinear Compact estimators for W3 and GHZ3."""
 
     physical = load_hamiltonian(HAMILTONIAN_ROOT / "H_3.txt")
     compact_physical = _paper_compact(physical)
     original = two_copy_observable(physical)
     compact = two_copy_observable(compact_physical)
-    legacy_original = two_copy_observable(physical, paper_positive_only=True)
-    legacy_compact = two_copy_observable(compact_physical, paper_positive_only=True)
     original_design = design_ogm(original, shot_budget=ogm_budget)
     compact_design = design_ogm(compact, shot_budget=ogm_budget)
 
@@ -248,7 +250,7 @@ def run_corrected_nonlinear_errors(
         ):
             if not np.isclose(expectation(rho, original), reference, atol=1e-10):
                 raise ValueError(
-                    f"Signed expansion failed direct expectation check for {state_name}"
+                    f"Two-copy expansion failed direct expectation check for {state_name}"
                 )
 
         simulated = simulate_ogm_unbiased(
@@ -284,7 +286,10 @@ def run_corrected_nonlinear_errors(
                 )
                 - tomography_reference,
                 "ideal_simulation": summarize_batches(simulated, ideal_reference),
-                "experimental_counts": summarize_batches(
+                "experimental_counts_ideal_reference": summarize_batches(
+                    experimental, ideal_reference
+                ),
+                "experimental_counts_tomography_reference": summarize_batches(
                     experimental, tomography_reference
                 ),
                 "single_shot_variance": {
@@ -306,21 +311,19 @@ def run_corrected_nonlinear_errors(
 
     return {
         "observable": "Tr(rho^2 H_3)",
-        "method": "Compact (3-qubit permutation twirl + signed two-copy expansion + OGM)",
+        "method": "Compact (3-qubit permutation twirl + two-copy expansion + OGM)",
         "shots": [int(value) for value in shots],
         "repeats": int(repeats),
         "seed": int(seed),
         "hamiltonians": {
-            "original_signed_terms": original.num_terms,
-            "compact_signed_terms": compact.num_terms,
+            "original_terms": original.num_terms,
+            "compact_terms": compact.num_terms,
             "original_negative_terms": int(np.count_nonzero(original.coefficients < 0)),
             "compact_negative_terms": int(np.count_nonzero(compact.coefficients < 0)),
-            "legacy_original_positive_terms": legacy_original.num_terms,
-            "legacy_compact_positive_terms": legacy_compact.num_terms,
         },
         "measurement_designs": {
-            "original_signed": _design_payload(original_design),
-            "compact_signed": _design_payload(compact_design),
+            "original": _design_payload(original_design),
+            "compact": _design_payload(compact_design),
         },
         "states": states,
     }
